@@ -18,9 +18,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
 table_schema, 
 table_name 
 FROM information_schema.tables 
-WHERE (table_schema = :OWNER OR :OWNER IS NULL)
-AND (table_name = :TABLENAME OR :TABLENAME IS NULL)
-AND TABLE_TYPE = 'BASE TABLE'
+WHERE (table_name = :TABLENAME OR :TABLENAME IS NULL)
+AND table_schema = 'public'
 ORDER BY table_schema, table_name";
         }
 
@@ -34,13 +33,12 @@ ORDER BY table_schema, table_name";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "OWNER", Owner);
             AddDbParameter(command, "TABLENAME", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["table_schema"].ToString();
+            var schema = Owner;
             var name = record["table_name"].ToString();
             var table = new DatabaseTable
                         {

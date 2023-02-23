@@ -46,8 +46,8 @@ FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS cons
         cons2.constraint_name = refs.unique_constraint_name
 WHERE 
     (keycolumns.table_name = :tableName OR :tableName IS NULL) AND 
-    (cons.constraint_schema = :schemaOwner OR :schemaOwner IS NULL) AND 
-    cons.constraint_type = :constraint_type
+    cons.constraint_type = :constraint_type AND 
+    cons.constraint_schema='public'
 ORDER BY
   cons.constraint_schema, keycolumns.table_name, cons.constraint_name,ordinal_position";
 
@@ -55,7 +55,6 @@ ORDER BY
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
 
             string constraintType;
@@ -82,7 +81,7 @@ ORDER BY
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("constraint_schema");
+            var schema = Owner;
             var tableName = record.GetString("table_name");
             var name = record.GetString("constraint_name");
 

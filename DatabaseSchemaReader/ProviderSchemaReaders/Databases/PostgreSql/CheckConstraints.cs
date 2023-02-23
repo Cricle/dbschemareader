@@ -26,7 +26,6 @@ INNER JOIN INFORMATION_SCHEMA.CHECK_CONSTRAINTS AS cons2
   cons2.constraint_name = cons.constraint_name
 WHERE 
     (cons.table_name = :tableName OR :tableName IS NULL) AND 
-    (cons.constraint_catalog = :schemaOwner OR :schemaOwner IS NULL) AND 
      cons.constraint_type = 'CHECK'
 ORDER BY cons.table_name, cons.constraint_name";
 
@@ -34,13 +33,12 @@ ORDER BY cons.table_name, cons.constraint_name";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("constraint_schema");
+            var schema = Owner;
             var tableName = record.GetString("table_name");
             var name = record.GetString("constraint_name");
             var expression = record.GetString("Expression");

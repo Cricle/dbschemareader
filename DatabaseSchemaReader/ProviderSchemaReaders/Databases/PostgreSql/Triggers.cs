@@ -19,7 +19,6 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
         }
 
@@ -28,7 +27,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
             var trigger = new DatabaseTrigger
             {
                 Name = record.GetString("TRIGGER_NAME"),
-                SchemaOwner = record.GetString("OWNER"),
+                SchemaOwner = Owner,
                 TableName = record.GetString("TABLE_NAME"),
                 TriggerBody = record.GetString("TRIGGER_BODY"),
                 TriggerType = record.GetString("TRIGGER_TYPE"),
@@ -55,8 +54,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
   " + timing + @" AS TRIGGER_TYPE
 FROM information_schema.Triggers
 WHERE 
-(EVENT_OBJECT_TABLE = :tableName OR :tableName IS NULL) AND 
-(TRIGGER_SCHEMA = :schemaOwner OR :schemaOwner IS NULL)";
+TRIGGER_SCHEMA='public' AND
+(EVENT_OBJECT_TABLE = :tableName OR :tableName IS NULL)";
 
             ExecuteDbReader(connectionAdapter);
             return Result;

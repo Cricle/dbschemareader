@@ -27,7 +27,6 @@ INNER JOIN pg_language lng ON lng.oid = pr.prolang
   tp.typname <> 'trigger'
   AND ns.nspname NOT LIKE 'pg_%'
   AND ns.nspname != 'information_schema'
-  AND (ns.nspname = :schemaOwner OR :schemaOwner IS NULL)
  ORDER BY pr.proname";
 
         }
@@ -47,12 +46,11 @@ INNER JOIN pg_language lng ON lng.oid = pr.prolang
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var owner = record.GetString("SCHEMA");
+            var owner = Owner;
             var name = record.GetString("NAME");
             var sql = record.GetString("BODY");
             var sproc = new DatabaseFunction

@@ -38,7 +38,6 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
    tp.typname <> 'trigger'
    AND ns.nspname NOT LIKE 'pg_%'
    AND ns.nspname != 'information_schema'
-   AND (ns.nspname = :schemaOwner OR :schemaOwner IS NULL)
    AND (pr.proname = :sprocName OR :sprocName IS NULL) 
   ORDER BY pr.proname";
 
@@ -66,7 +65,6 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "sprocName", _name);
         }
 
@@ -94,7 +92,7 @@ INNER JOIN pg_namespace ns ON pr.pronamespace = ns.oid
             //there are no arguments for this procedure
             if (allArgs.Length == 0) return;
 
-            var schema = ReadString(record["SCHEMA"]);
+            var schema = Owner;
             var procedure = ReadString(record["NAME"]);
             var modes = ReadArray(record["ARGMODES"]);
             var argNames = ReadArray(record["ARGNAMES"]);

@@ -25,7 +25,6 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
 FROM pg_class mv
     JOIN pg_namespace ns ON mv.relnamespace = ns.oid
 WHERE mv.relkind = 'm'
-AND (ns.nspname = :OWNER OR :OWNER IS NULL)
 AND (mv.relname = :TABLENAME OR :TABLENAME IS NULL)
 ORDER BY ns.nspname, mv.relname";
             //for 9.3 +
@@ -34,8 +33,7 @@ schemaname,
 matviewname,
 definition
 FROM pg_matviews
-WHERE (schemaname = :OWNER OR :OWNER IS NULL)
-AND (matviewname = :TABLENAME OR :TABLENAME IS NULL)
+WHERE (matviewname = :TABLENAME OR :TABLENAME IS NULL)
 ORDER BY schemaname, matviewname";
         }
 
@@ -63,13 +61,12 @@ ORDER BY schemaname, matviewname";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "OWNER", Owner);
             AddDbParameter(command, "TABLENAME", _viewName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["schemaname"].ToString();
+            var schema = Owner;
             var name = record["matviewname"].ToString();
             var table = new DatabaseView
             {

@@ -27,8 +27,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
   numeric_scale,
   datetime_precision
 FROM information_schema.columns
-WHERE (table_schema = :OWNER OR :OWNER IS NULL)
-AND (table_name = :TABLENAME OR :TABLENAME IS NULL)
+WHERE (table_name = :TABLENAME OR :TABLENAME IS NULL) AND
+table_schema='public'
 ORDER BY table_schema, table_name, ordinal_position";
         }
 
@@ -40,13 +40,12 @@ ORDER BY table_schema, table_name, ordinal_position";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "OWNER", Owner);
             AddDbParameter(command, "TABLENAME", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["table_schema"].ToString();
+            var schema = Owner;
             var tableName = record["table_name"].ToString();
             var name = record["column_name"].ToString();
             var table = new DatabaseColumn

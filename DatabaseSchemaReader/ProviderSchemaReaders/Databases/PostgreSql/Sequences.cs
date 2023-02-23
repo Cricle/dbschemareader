@@ -53,12 +53,11 @@ FROM pg_sequences";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var owner = record.GetString("schemaname");
+            var owner = Owner;
             var name = record.GetString("sequencename");
             //these are actually bigInts, but they are likely to be ints
             var increment = record.GetNullableInt("increment_by");

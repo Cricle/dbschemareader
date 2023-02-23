@@ -39,7 +39,6 @@ WHERE
     AND pg_catalog.pg_table_is_visible(i.oid)
     --AND a.attnum = ANY(ix.indkey)
     AND t.relkind = 'r'
-    AND (n.nspname = :OWNER OR :OWNER IS NULL)
     AND (t.relname = :TABLENAME OR :TABLENAME IS NULL)
 ORDER BY
     n.nspname, t.relname, i.relname, a.attnum";
@@ -53,13 +52,12 @@ ORDER BY
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "OWNER", Owner);
             AddDbParameter(command, "TABLENAME", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["table_schema"].ToString();
+            var schema = Owner;
             var tableName = record["table_name"].ToString();
             var name = record["index_name"].ToString();
             var index = Result.FirstOrDefault(f => f.Name == name && f.SchemaOwner == schema && f.TableName.Equals(tableName, StringComparison.OrdinalIgnoreCase));

@@ -24,8 +24,7 @@ INNER JOIN pg_description d ON c.oid = d.objoid
 WHERE 
     c.relkind = 'r' AND    
     d.objsubid = 0 AND
-    (c.relname = :tableName OR :tableName IS NULL) AND 
-    (ns.nspname = :schemaOwner OR :schemaOwner IS NULL)";
+    (c.relname = :tableName OR :tableName IS NULL)";
         }
 
         public IList<DatabaseTable> Execute(IConnectionAdapter connectionAdapter)
@@ -36,13 +35,12 @@ WHERE
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var owner = record.GetString("SchemaOwner");
+            var owner = Owner;
             var name = record.GetString("TableName");
             var table = new DatabaseTable
             {
