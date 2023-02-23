@@ -17,7 +17,6 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
 			_tableName = tableName;
 			Owner = owner;
 			Sql = @" SELECT 
-	 SchemaName = SCHEMA_NAME(t.schema_id),
 	 TableName = t.name,
 	 IndexName = ind.name,
 	 ColumnName = col.name,
@@ -36,7 +35,6 @@ INNER JOIN
 	 sys.tables t ON ind.object_id = t.object_id 
 WHERE 
 	(t.name = @TableName OR @TableName IS NULL) AND 
-	(SCHEMA_NAME(t.schema_id) = @schemaOwner OR @schemaOwner IS NULL) AND 
 	 t.is_ms_shipped = 0 AND
 	 ic.is_included_column = 0
 ORDER BY 
@@ -46,13 +44,12 @@ ORDER BY
 
 		protected override void AddParameters(DbCommand command)
 		{
-			AddDbParameter(command, "schemaOwner", Owner);
 			AddDbParameter(command, "TableName", _tableName);
 		}
 
 		protected override void Mapper(IDataRecord record)
 		{
-			var schema = record.GetString("SchemaName");
+			var schema = Owner;
 			var tableName = record.GetString("TableName");
 			var name = record.GetString("IndexName");
 			var index = Result.FirstOrDefault(f => f.Name == name && f.SchemaOwner == schema && f.TableName.Equals(tableName, StringComparison.OrdinalIgnoreCase));

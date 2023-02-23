@@ -17,7 +17,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
             _constraintType = constraintType;
             Owner = owner;
             Sql = @"SELECT DISTINCT
-cons.constraint_schema,
+cons.constraint_catalog,
 cons.constraint_name, 
 keycolumns.table_name, 
 column_name, 
@@ -31,25 +31,25 @@ FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS cons
     INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS keycolumns
         ON (cons.constraint_catalog = keycolumns.constraint_catalog
             OR cons.constraint_catalog IS NULL) AND
-        cons.constraint_schema = keycolumns.constraint_schema AND
+        cons.constraint_catalog = keycolumns.constraint_catalog AND
         cons.constraint_name = keycolumns.constraint_name AND
         cons.table_name = keycolumns.table_name
     LEFT OUTER JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS refs
         ON (cons.constraint_catalog = refs.constraint_catalog
             OR cons.constraint_catalog IS NULL) AND
-        cons.constraint_schema = refs.constraint_schema AND
+        cons.constraint_catalog = refs.constraint_catalog AND
         cons.constraint_name = refs.constraint_name
     LEFT OUTER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS cons2
         ON (cons2.constraint_catalog = refs.constraint_catalog
             OR cons2.constraint_catalog IS NULL) AND
-        cons2.constraint_schema = refs.unique_constraint_schema AND
+        cons2.constraint_catalog = refs.constraint_catalog AND
         cons2.constraint_name = refs.unique_constraint_name
 WHERE 
     (keycolumns.table_name = @tableName OR @tableName IS NULL) AND 
-    (cons.constraint_schema = @schemaOwner OR @schemaOwner IS NULL) AND 
+    (cons.constraint_catalog = @schemaOwner OR @schemaOwner IS NULL) AND 
     cons.constraint_type = @constraint_type
 ORDER BY
-    cons.constraint_schema, keycolumns.table_name, cons.constraint_name, ordinal_position";
+    cons.constraint_catalog, keycolumns.table_name, cons.constraint_name, ordinal_position";
 
         }
 
@@ -82,7 +82,7 @@ ORDER BY
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("constraint_schema");
+            var schema = record.GetString("constraint_catalog");
             var tableName = record.GetString("table_name");
             var name = record.GetString("constraint_name");
 

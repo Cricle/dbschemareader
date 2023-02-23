@@ -16,7 +16,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
             _tableName = tableName;
             Owner = owner;
 
-            Sql = @"SELECT
+            Sql = @"
+SELECT
  tr.name AS TRIGGER_NAME,
  SCHEMA_NAME(parent.schema_id) AS TRIGGER_SCHEMA,
  SCHEMA_NAME(parent.schema_id) AS TABLE_SCHEMA,
@@ -31,15 +32,13 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
 FROM sys.triggers AS tr
  INNER JOIN sys.tables AS parent
   ON tr.parent_id = parent.object_id
-WHERE (SCHEMA_NAME(parent.schema_id) = @Owner or (@Owner is null)) 
-    AND (parent.name = @TABLE_NAME or (@TABLE_NAME is null)) 
+WHERE (parent.name = @TABLE_NAME or (@TABLE_NAME is null)) 
 ";
 
         }
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "Owner", Owner);
             AddDbParameter(command, "TABLE_NAME", _tableName);
         }
 
@@ -48,7 +47,7 @@ WHERE (SCHEMA_NAME(parent.schema_id) = @Owner or (@Owner is null))
             var trigger = new DatabaseTrigger
             {
                 Name = record.GetString("TRIGGER_NAME"),
-                SchemaOwner = record.GetString("TABLE_SCHEMA"),
+                SchemaOwner = Owner,
                 TableName = record.GetString("TABLE_NAME"),
                 TriggerBody = record.GetString("TRIGGER_BODY"),
             };

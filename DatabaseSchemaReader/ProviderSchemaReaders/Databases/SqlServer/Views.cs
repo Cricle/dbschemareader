@@ -17,7 +17,6 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
             Sql = @"select TABLE_SCHEMA, TABLE_NAME 
 from INFORMATION_SCHEMA.VIEWS 
 where 
-    (TABLE_SCHEMA = @Owner or (@Owner is null)) and 
     (TABLE_NAME = @TABLE_NAME or (@TABLE_NAME is null))
  order by 
     TABLE_SCHEMA, TABLE_NAME";
@@ -33,13 +32,12 @@ where
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "Owner", Owner);
             AddDbParameter(command, "TABLE_NAME", _viewName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["TABLE_SCHEMA"].ToString();
+            var schema = Owner;
             var name = record["TABLE_NAME"].ToString();
             var table = new DatabaseView
                         {

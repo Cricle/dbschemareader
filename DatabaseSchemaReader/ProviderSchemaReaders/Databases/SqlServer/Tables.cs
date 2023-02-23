@@ -14,14 +14,14 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
         {
             _tableName = tableName;
             Owner = owner;
-            Sql = @"select TABLE_SCHEMA, TABLE_NAME 
+            Sql = @"select TABLE_CATALOG, TABLE_NAME 
 from INFORMATION_SCHEMA.TABLES 
 where 
-    (TABLE_SCHEMA = @Owner or (@Owner is null)) and 
+    (TABLE_CATALOG = @Owner or (@Owner is null)) and 
     (TABLE_NAME = @TABLE_NAME or (@TABLE_NAME is null)) and 
     TABLE_TYPE = 'BASE TABLE'
  order by 
-    TABLE_SCHEMA, TABLE_NAME";
+    TABLE_CATALOG, TABLE_NAME";
         }
 
         public IList<DatabaseTable> Execute(IConnectionAdapter connectionAdapter)
@@ -40,7 +40,7 @@ where
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record["TABLE_SCHEMA"].ToString();
+            var schema = record["TABLE_CATALOG"].ToString();
             var name = record["TABLE_NAME"].ToString();
             var table = new DatabaseTable
                         {

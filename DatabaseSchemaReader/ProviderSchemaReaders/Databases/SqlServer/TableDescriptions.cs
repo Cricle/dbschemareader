@@ -27,7 +27,6 @@ INNER JOIN sys.extended_properties p
     AND p.name = 'MS_Description'
 WHERE
     (o.name = @tableName OR @tableName IS NULL) AND
-    (s.name = @schemaOwner OR @schemaOwner IS NULL) AND
     o.type= 'U'
 ORDER BY s.name, o.name";
         }
@@ -40,13 +39,12 @@ ORDER BY s.name, o.name";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var owner = record.GetString("SchemaOwner");
+            var owner = Owner;
             var name = record.GetString("TableName");
             var table = new DatabaseTable
             {

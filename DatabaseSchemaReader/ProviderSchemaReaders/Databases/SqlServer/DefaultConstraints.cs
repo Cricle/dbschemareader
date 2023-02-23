@@ -29,7 +29,6 @@ INNER JOIN  sys.schemas s
     ON s.schema_id = o.schema_id
 WHERE 
     (o.name = @tableName OR @tableName IS NULL) AND 
-    (s.name = @schemaOwner OR @schemaOwner IS NULL) AND 
 o.type= 'U' 
 ORDER BY s.name, o.name";
 
@@ -37,7 +36,6 @@ ORDER BY s.name, o.name";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "tableName", _tableName);
         }
 
@@ -48,7 +46,7 @@ ORDER BY s.name, o.name";
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("SCHEMA_NAME");
+            var schema = Owner;
             var tableName = record.GetString("TABLE_NAME");
             var name = record.GetString("CONSTRAINT_NAME");
 

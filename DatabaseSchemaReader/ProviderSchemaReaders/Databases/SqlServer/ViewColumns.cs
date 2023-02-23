@@ -30,7 +30,6 @@ JOIN INFORMATION_SCHEMA.VIEWS v
  ON c.TABLE_SCHEMA = v.TABLE_SCHEMA AND 
     c.TABLE_NAME = v.TABLE_NAME
 where 
-    (c.TABLE_SCHEMA = @Owner or (@Owner is null)) and 
     (c.TABLE_NAME = @TableName or (@TableName is null))
  order by 
     c.TABLE_SCHEMA, c.TABLE_NAME, ORDINAL_POSITION";
@@ -44,7 +43,6 @@ where
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "Owner", Owner);
             AddDbParameter(command, "TableName", _viewName);
         }
 

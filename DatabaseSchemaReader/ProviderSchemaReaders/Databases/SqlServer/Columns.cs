@@ -26,13 +26,14 @@ DATA_TYPE,
 CHARACTER_MAXIMUM_LENGTH, 
 NUMERIC_PRECISION, 
 NUMERIC_SCALE, 
-DATETIME_PRECISION 
+DATETIME_PRECISION,
+c.TABLE_CATALOG
 from INFORMATION_SCHEMA.COLUMNS c
 JOIN INFORMATION_SCHEMA.TABLES t 
  ON c.TABLE_SCHEMA = t.TABLE_SCHEMA AND 
     c.TABLE_NAME = t.TABLE_NAME
 where 
-    (c.TABLE_SCHEMA = @Owner or (@Owner is null)) and 
+    (c.TABLE_CATALOG = @Owner or (@Owner is null)) and 
     (c.TABLE_NAME = @TableName or (@TableName is null)) AND
     TABLE_TYPE = 'BASE TABLE'
  order by 
@@ -63,7 +64,7 @@ where
             {
                 Name = row["COLUMN_NAME"].ToString(),
                 TableName = row["TABLE_NAME"].ToString(),
-                SchemaOwner = row["TABLE_SCHEMA"].ToString(),
+                SchemaOwner = row["TABLE_CATALOG"].ToString(),
                 Ordinal = System.Convert.ToInt32(row["ORDINAL_POSITION"], CultureInfo.CurrentCulture),
                 DbDataType = row["DATA_TYPE"].ToString(),
                 Nullable = row.GetBoolean("IS_NULLABLE"),

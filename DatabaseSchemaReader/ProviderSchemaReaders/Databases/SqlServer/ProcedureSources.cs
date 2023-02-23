@@ -24,7 +24,6 @@ FROM sys.sql_modules AS sm
     JOIN sys.objects AS o
         ON sm.object_id = o.object_id
 WHERE (o.type = N'P' OR o.type = N'FN' OR o.type = N'TF' OR o.type = N'IF' OR o.type='PC' OR o.type='V')
-    AND (OBJECT_SCHEMA_NAME(o.object_id) = @schemaOwner OR @schemaOwner IS NULL)
     AND (OBJECT_NAME(sm.object_id) = @name OR @name IS NULL)
 ORDER BY o.type;";
         }
@@ -47,7 +46,6 @@ ORDER BY o.type;";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "name", _name);
         }
 
@@ -56,7 +54,7 @@ ORDER BY o.type;";
             var source = new ProcedureSource
                         {
                             Name = record.GetString("Name"),
-                            SchemaOwner = record.GetString("Owner")
+                            SchemaOwner = Owner
                         };
             var type = record.GetString("Type").Trim();
             switch (type)

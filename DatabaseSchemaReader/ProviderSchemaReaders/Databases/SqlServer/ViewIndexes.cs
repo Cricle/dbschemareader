@@ -34,7 +34,6 @@ INNER JOIN
      sys.views t ON ind.object_id = t.object_id 
 WHERE 
     (t.name = @TableName OR @TableName IS NULL) AND 
-    (SCHEMA_NAME(t.schema_id) = @schemaOwner OR @schemaOwner IS NULL) AND 
      t.is_ms_shipped = 0 
 ORDER BY 
      t.name, ind.name, col.name";
@@ -43,13 +42,12 @@ ORDER BY
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "TableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("SchemaName");
+            var schema = Owner;
             var tableName = record.GetString("TableName");
             var name = record.GetString("IndexName");
             var index = Result.FirstOrDefault(f => f.Name == name && f.SchemaOwner == schema &&
