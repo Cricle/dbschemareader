@@ -116,7 +116,7 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
             if (string.IsNullOrEmpty(originalColumnName))
                 return base.RenameColumn(databaseTable, databaseColumn, originalColumnName);
             var name = TableName(databaseTable) + "." + Escape(originalColumnName);
-            return "sp_rename '" + name + "', '" + databaseColumn.Name + "', 'COLUMN';";
+            return "exec sp_rename '" + name + "', '" + databaseColumn.Name + "', 'COLUMN';";
         }
 
         public override string RenameTable(DatabaseTable databaseTable, string originalTableName)
@@ -126,7 +126,7 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
                 return base.RenameTable(databaseTable, originalTableName);
             var name = SchemaPrefix(databaseTable.SchemaOwner) + Escape(originalTableName);
             //#86 @objname is qualified with database so escaped, but the @newname only requires single quote
-            return "sp_rename '" + name + "', '" + databaseTable.Name + "';";
+            return "exec sp_rename '" + name + "', '" + databaseTable.Name + "';";
         }
 
         public override string DropIndex(DatabaseTable databaseTable, DatabaseIndex index)
