@@ -480,7 +480,7 @@ namespace DatabaseSchemaReader.SqlGen
         /// <returns></returns>
         public virtual string RenameTable(DatabaseTable databaseTable, string originalTableName)
         {
-            return "--TODO rename table " + Escape(originalTableName) + " to " + TableName(databaseTable);
+            return RenameTableTo(databaseTable, originalTableName);
         }
 
         protected string RenameTableTo(DatabaseTable databaseTable, string originalTableName)
@@ -533,7 +533,7 @@ namespace DatabaseSchemaReader.SqlGen
         /// <summary>
         /// Gets the escaped table name (prefixed with schema if present)
         /// </summary>
-        protected string TableName(DatabaseTable databaseTable)
+        protected virtual string TableName(DatabaseTable databaseTable)
         {
             return SchemaPrefix(databaseTable.SchemaOwner) + Escape(databaseTable.Name);
         }

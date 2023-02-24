@@ -76,7 +76,7 @@ namespace DatabaseSchemaReader.SqlGen
 
         protected string SchemaTableName(DatabaseTable databaseTable)
         {
-            return SchemaName(databaseTable.SchemaOwner) + EscapeName(databaseTable.Name);
+            return EscapeName(databaseTable.Name);
         }
 
         /// <summary>

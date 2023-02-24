@@ -100,7 +100,43 @@ ON {3}
         {
             return RenameTableTo(databaseTable, originalTableName);
         }
-
+        protected override string TableName(DatabaseTable databaseTable)
+        {
+            return Escape(databaseTable.Name);
+        }
+        public override string RenameColumn(DatabaseTable databaseTable, DatabaseColumn databaseColumn, string originalColumnName)
+        {
+            var ncol = new DatabaseColumn
+            {
+                ComputedDefinition = databaseColumn.ComputedDefinition,
+                NetName = databaseColumn.NetName,
+                DatabaseSchema = databaseColumn.DatabaseSchema,
+                DataType = databaseColumn.DataType,
+                DateTimePrecision = databaseColumn.DateTimePrecision,
+                DbDataType = databaseColumn.DbDataType,
+                DefaultValue = databaseColumn.DefaultValue,
+                Description = databaseColumn.Description,
+                ForeignKeyTable = databaseColumn.ForeignKeyTable,
+                Name = originalColumnName,
+                ForeignKeyTableName = databaseColumn.ForeignKeyTableName,
+                IdentityDefinition = databaseColumn.IdentityDefinition,
+                IsAutoNumber = databaseColumn.IsAutoNumber,
+                IsForeignKey = databaseColumn.IsForeignKey,
+                IsIndexed = databaseColumn.IsIndexed,
+                IsPrimaryKey = databaseColumn.IsPrimaryKey,
+                IsUniqueKey = databaseColumn.IsUniqueKey,
+                Length = databaseColumn.Length,
+                Nullable = databaseColumn.Nullable,
+                Ordinal = databaseColumn.Ordinal,
+                Precision = databaseColumn.Precision,
+                Scale = databaseColumn.Scale,
+                SchemaOwner = databaseColumn.SchemaOwner,
+                Table = databaseColumn.Table,
+                TableName = databaseColumn.TableName,
+                Tag = databaseColumn.Tag,
+            };
+            return AlterColumn(databaseTable, ncol, databaseColumn);
+        }
         public override string BackupAndUpdateTable(DatabaseTable databaseTable, DatabaseTable newTable)
         {
             StringBuilder sb = new StringBuilder();
@@ -117,10 +153,10 @@ ON {3}
                 var diff = databaseTable.GetColumnList().Except(newTable.GetColumnList());
                 selectColumns = newColumns.Replace(ndiff.First(), diff.First());
             }
-            sb.AppendFormat("INSERT INTO {0} ({4}) SELECT {1} FROM {2};{3}", newTable.Name,
-                        selectColumns, databaseTable.Name, Environment.NewLine, newColumns);
-            sb.AppendFormat("DROP TABLE {0};{1}", databaseTable.Name, Environment.NewLine);
-            sb.AppendFormat("ALTER TABLE {0} RENAME TO {1};{2}", newTable.Name, databaseTable.Name, Environment.NewLine);
+            sb.AppendFormat("INSERT INTO {0} ({4}) SELECT {1} FROM {2};{3}", Escape(newTable.Name),
+                        selectColumns, Escape(databaseTable.Name), Environment.NewLine, newColumns);
+            sb.AppendFormat("DROP TABLE {0};{1}", Escape(databaseTable.Name), Environment.NewLine);
+            sb.AppendFormat("ALTER TABLE {0} RENAME TO {1};{2}", Escape(newTable.Name), Escape(databaseTable.Name), Environment.NewLine);
             return sb.ToString();
         }
 

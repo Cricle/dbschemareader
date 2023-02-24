@@ -11,7 +11,10 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
             : base(SqlType.PostgreSql)
         {
         }
-
+        protected override string TableName(DatabaseTable databaseTable)
+        {
+            return Escape(databaseTable.Name);
+        }
         public override string AddTrigger(DatabaseTable databaseTable, DatabaseTrigger trigger)
         {
             //CREATE TRIGGER notify_dept AFTER INSERT OR UPDATE OR DELETE
