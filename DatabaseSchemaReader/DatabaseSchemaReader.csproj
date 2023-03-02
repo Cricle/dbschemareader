@@ -74,7 +74,7 @@
     <DefineConstants>TRACE;DEBUG;NET4</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' Or '$(TargetFramework)' == 'netstandard2.0' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' Or '$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net6.0' ">
     <DefineConstants>TRACE;DEBUG;COREFX;NETSTANDARD2_0;</DefineConstants>
   </PropertyGroup>
 
@@ -82,7 +82,7 @@
     <Compile Remove="DbSchemaReader\**\*.cs;ProviderSchemaReaders\DbProviders\**\*.cs;Conversion\**\*.cs;Data\**\*.cs;Procedures\**\*.cs;Utilities\DbProvider\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net6.0'  ">
     <Compile Remove="DbSchemaReader\**\*.cs;ProviderSchemaReaders\DbProviders\**\*.cs;Conversion\**\*.cs;Utilities\DbProvider\**\*.cs" />
   </ItemGroup>
   
