@@ -15,7 +15,10 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
         {
             return new SqlFormatProvider();
         }
-
+        protected override string TableName(DatabaseTable databaseTable)
+        {
+            return EscapeName(databaseTable.Name);
+        }
         protected override string ConstraintName(DatabaseConstraint constraint)
         {
             var name = constraint.Name;
