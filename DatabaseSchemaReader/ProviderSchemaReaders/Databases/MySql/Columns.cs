@@ -71,6 +71,10 @@ where
                 //DateTimePrecision = record.GetNullableInt("DATETIME_PRECISION"), //added in MySQL 5.6.4. 
                 Description = record.GetString("COLUMN_COMMENT"),
             };
+            if (col.Nullable && col.DefaultValue == "NULL")
+            {
+                col.DefaultValue = null;
+            }
             Result.Add(col);
         }
     }
