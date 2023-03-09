@@ -226,7 +226,7 @@ namespace DatabaseSchemaReader.SqlGen
 
         protected virtual string TableName(DatabaseTable databaseTable)
         {
-            return SchemaPrefix(databaseTable.SchemaOwner) + EscapeName(databaseTable.Name);
+            return EscapeName(databaseTable.Name);
         }
 
         private string SchemaPrefix(string schema)

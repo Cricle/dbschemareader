@@ -21,7 +21,6 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
         {
             return false;
         }
-
         public override string WritePrimaryKey(DatabaseConstraint constraint)
         {
             if (constraint == null) return null;

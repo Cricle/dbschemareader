@@ -17,7 +17,7 @@ namespace DatabaseSchemaReader.SqlGen
         {
             _sqlFormatProvider = SqlFormatFactory.Provider(sqlType);
             _ddlFactory = new DdlGeneratorFactory(sqlType);
-            IncludeSchema = (sqlType != SqlType.SqlServerCe && sqlType != SqlType.SQLite);
+            IncludeSchema = false;//(sqlType != SqlType.SqlServerCe && sqlType != SqlType.SQLite);
             EscapeNames = true;
         }
 
