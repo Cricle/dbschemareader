@@ -285,8 +285,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
         {
             foreach (var id in ids)
             {
-                var column = list.FirstOrDefault(x => x.SchemaOwner == id.SchemaOwner &&
-                                                      x.TableName == id.TableName &&
+                var column = list.FirstOrDefault(x => x.TableName == id.TableName &&
                                                       x.Name == id.Name);
                 if (column == null) continue;
                 column.IdentityDefinition = new DatabaseColumnIdentity

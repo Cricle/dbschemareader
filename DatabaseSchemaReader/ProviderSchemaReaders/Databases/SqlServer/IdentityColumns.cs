@@ -25,7 +25,6 @@ INNER JOIN sys.all_objects o ON c.object_id = o.object_id
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
 WHERE 
 (o.name = @TableName OR @TableName IS NULL) AND 
-(s.name = @schemaOwner OR @schemaOwner IS NULL) AND 
 o.type= 'U' 
 ORDER BY o.name, c.name";
         }
@@ -38,13 +37,12 @@ ORDER BY o.name, c.name";
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "schemaOwner", Owner);
             AddDbParameter(command, "TableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("SchemaOwner");
+            var schema = Owner;
             var tableName = record.GetString("TableName");
             var columnName = record.GetString("ColumnName");
             var seed = record.GetNullableLong("IdentitySeed").GetValueOrDefault();
