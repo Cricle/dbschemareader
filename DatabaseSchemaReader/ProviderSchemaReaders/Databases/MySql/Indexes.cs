@@ -16,35 +16,19 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.MySql
             : base(commandTimeout, owner)
         {
             _tableName = tableName;
-            Sql = @" SELECT 
-     TABLE_SCHEMA,
-     TABLE_NAME,
-     INDEX_NAME,
-     COLUMN_NAME,
-     SEQ_IN_INDEX,
-     INDEX_TYPE,
-     NON_UNIQUE
-FROM 
-     INFORMATION_SCHEMA.STATISTICS 
-WHERE 
-    (TABLE_NAME = @TableName OR @TableName IS NULL) AND 
-    (TABLE_SCHEMA = @schemaOwner OR @schemaOwner IS NULL)
-ORDER BY 
-     TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, SEQ_IN_INDEX";
+            Sql = $@"SHOW INDEX FROM `{tableName}`";
 
         }
 
         protected override void AddParameters(DbCommand command)
         {
-            AddDbParameter(command, "@schemaOwner", Owner);
-            AddDbParameter(command, "@tableName", _tableName);
         }
 
         protected override void Mapper(IDataRecord record)
         {
-            var schema = record.GetString("TABLE_SCHEMA");
-            var tableName = record.GetString("TABLE_NAME");
-            var name = record.GetString("INDEX_NAME");
+            var schema = Owner;
+            var tableName = record.GetString("Table");
+            var name = record.GetString("Key_name");
             var index = Result.FirstOrDefault(f => f.Name == name && f.SchemaOwner == schema && f.TableName.Equals(tableName, StringComparison.OrdinalIgnoreCase));
             if (index == null)
             {
@@ -53,18 +37,18 @@ ORDER BY
                     SchemaOwner = schema,
                     TableName = tableName,
                     Name = name,
-                    IndexType = record.GetString("INDEX_TYPE"),
-                    IsUnique = !record.GetBoolean("NON_UNIQUE"),
+                    IndexType = record.GetString("Index_type"),
+                    IsUnique = !record.GetBoolean("Non_unique"),
                 };
                 Result.Add(index);
             }
-            var colName = record.GetString("COLUMN_NAME");
+            var colName = record.GetString("Column_name");
             if (string.IsNullOrEmpty(colName)) return;
 
             var col = new DatabaseColumn
             {
                 Name = colName,
-                Ordinal = record.GetInt("SEQ_IN_INDEX"),
+                Ordinal = record.GetInt("Seq_in_index"),
             };
             index.Columns.Add(col);
         }
