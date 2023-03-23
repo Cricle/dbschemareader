@@ -114,9 +114,14 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
             var tableDescs = _readerAdapter.TableDescriptions(null);
             var colDescs = _readerAdapter.ColumnDescriptions(null);
             var computed = _readerAdapter.ComputedColumns(null);
-            var indexes = MergeIndexColumns(_readerAdapter.Indexes(null), _readerAdapter.IndexColumns(null));
-            var noIndexes = (indexes.Count == 0); //we may not be able to get any indexes without a tableName
-            FillOutForeignKey(fks, indexes);
+            List<DatabaseIndex> dbIdxs = new List<DatabaseIndex>();
+            foreach (var item in tables)
+            {
+                var indexes = MergeIndexColumns(_readerAdapter.Indexes(item.Name), _readerAdapter.IndexColumns(item.Name));
+                dbIdxs.AddRange(indexes);
+            }
+            var noIndexes = (dbIdxs.Count == 0); //we may not be able to get any indexes without a tableName
+            FillOutForeignKey(fks, dbIdxs);
             
             var tableFilter = _readerAdapter.Parameters.Exclusions.TableFilter;
             if (tableFilter != null)
@@ -155,10 +160,10 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
                 UpdateConstraints(table, dfs, ConstraintType.Default);
                 if (noIndexes)
                 {
-                    indexes.Clear();
-                    indexes = MergeIndexColumns(_readerAdapter.Indexes(tableName), _readerAdapter.IndexColumns(tableName));
+                    dbIdxs.Clear();
+                    dbIdxs = MergeIndexColumns(_readerAdapter.Indexes(tableName), _readerAdapter.IndexColumns(tableName)).ToList();
                 }
-                UpdateIndexes(table, indexes);
+                UpdateIndexes(table, dbIdxs);
                 UpdateTriggers(table, triggers);
                 UpdateTableDescriptions(table, tableDescs);
                 UpdateColumnDescriptions(table, colDescs);
