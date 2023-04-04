@@ -535,5 +535,15 @@ namespace DatabaseSchemaReader
         }
 
         #endregion Implementation of IDisposable
+
+        /// <summary>
+        /// Get the <see cref="DataType"/> range from <paramref name="sqlType"/>
+        /// </summary>
+        /// <param name="sqlType">The sql type</param>
+        /// <returns></returns>
+        public static IList<DataType> GetDataTypes(SqlType sqlType)
+        {
+            return ReaderAdapterFactory.GetDataTypes(sqlType);
+        }
     }
 }

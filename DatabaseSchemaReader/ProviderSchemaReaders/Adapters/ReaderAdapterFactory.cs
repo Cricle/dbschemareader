@@ -1,10 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using DatabaseSchemaReader.DataSchema;
 
 namespace DatabaseSchemaReader.ProviderSchemaReaders.Adapters
 {
     static class ReaderAdapterFactory
     {
+        public static IList<DataType> GetDataTypes(SqlType sqlType)
+        {
+            switch (sqlType)
+            {
+                case SqlType.SqlServer:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer.DataTypes().Execute();
+                case SqlType.Oracle:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.Oracle.DataTypeList().Execute();
+                case SqlType.MySql:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.MySql.DataTypeList().Execute();
+                case SqlType.SQLite:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.SQLite.DataTypeList().Execute();
+                case SqlType.SqlServerCe:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServerCe.DataTypeList().Execute();
+                case SqlType.PostgreSql:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql.DataTypeList().Execute();
+                case SqlType.Db2:
+                default:
+                    return new DataType[0];
+            }
+        }
         public static ReaderAdapter Create(SchemaParameters schemaParameters)
         {
             ReaderAdapter schemaReader = null;
