@@ -5,6 +5,14 @@ namespace DatabaseSchemaReader.SqlGen
 {
     static class DataTypeMappingFactory
     {
+        public static DataTypeMapper DataTypeMapper(DatabaseSchema databaseSchema)
+        {
+            SqlType? type = SqlType.SqlServer;
+            if (databaseSchema != null)
+                type = ProviderToSqlType.Convert(databaseSchema.Provider);
+            if (!type.HasValue) type = SqlType.SqlServer;
+            return DataTypeMapper(type.Value);
+        }
         public static DataTypeMapper DataTypeMapper(DatabaseTable databaseTable)
         {
             if (databaseTable == null) throw new ArgumentNullException("databaseTable", "databaseTable must not be null");

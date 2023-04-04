@@ -3,8 +3,10 @@ using DatabaseSchemaReader.Filters;
 using DatabaseSchemaReader.ProviderSchemaReaders;
 using DatabaseSchemaReader.ProviderSchemaReaders.Adapters;
 using DatabaseSchemaReader.ProviderSchemaReaders.Builders;
+using DatabaseSchemaReader.SqlGen;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 // ReSharper disable once RedundantUsingDirective
 using System.Threading;
@@ -436,6 +438,10 @@ namespace DatabaseSchemaReader
                 var handler = ReaderProgress;
                 if (handler != null) builder.ReaderProgress += RaiseReadingProgress;
                 table = builder.Execute(ct, tableName);
+                if (table==null)
+                {
+                    return null;
+                }
             }
 
             var existingTable = DatabaseSchema.FindTableByName(tableName, _schemaParameters.Owner);
@@ -511,6 +517,23 @@ namespace DatabaseSchemaReader
             DatabaseSchema.DataTypes.AddRange(list);
             DatabaseSchemaFixer.UpdateDataTypes(DatabaseSchema); //if columns/arguments loaded later, run this method again.
             return list;
+        }
+
+        /// <summary>
+        /// Find raw data type string from <see cref="DataType"/>
+        /// </summary>
+        /// <param name="table">The ref table</param>
+        /// <param name="dbType">Target db type</param>
+        /// <returns>If the type exists return raw type string, otherwise return null</returns>
+        public string FindDataTypesByDbType(DatabaseSchema table,DbType dbType)
+        {
+            return DataTypeMappingFactory.DataTypeMapper(table).Map(dbType);
+        }
+
+        /// <inheritdoc cref="FindDataTypesByDbType(DatabaseSchema, DbType)"/>
+        public string FindDataTypesByDbType(DbType dbType)
+        {
+            return DataTypeMappingFactory.DataTypeMapper(DatabaseSchema).Map(dbType);
         }
 
         private void UpdateReferences()
