@@ -148,6 +148,17 @@ namespace DatabaseSchemaReader
         }
 
         /// <summary>
+        /// Get the reader provide sql type
+        /// </summary>
+        public SqlType? SqlType
+        {
+            get
+            {
+                return _schemaParameters.SqlType;
+            }
+        }
+
+        /// <summary>
         /// Set the ADO command timeout. If not set, default is normally 30 seconds
         /// </summary>
         public int? CommandTimeout
