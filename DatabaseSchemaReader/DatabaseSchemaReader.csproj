@@ -38,7 +38,7 @@ The main warehouse is https://github.com/Cricle/dbschemareader .</Description>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <Version>2.7.18</Version>
+    <Version>2.7.19</Version>
     <Configurations>Debug;Release;net45;Net4</Configurations>
   </PropertyGroup>
 
