@@ -11,212 +11,212 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
             dts.Add(new DataType("bigint", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bigint",
             });
             dts.Add(new DataType("bigserial", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bigserial",
             });
             dts.Add(new DataType("binary", "System.Byte[]")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "binary",
             });
             dts.Add(new DataType("bit varying", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bit varying",
             });
             dts.Add(new DataType("bit", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bit",
             });
             dts.Add(new DataType("bool", "System.Boolean")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bool",
             });
             dts.Add(new DataType("boolean", "System.Boolean")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "boolean",
             });
             dts.Add(new DataType("bpchar", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bpchar",
             });
             dts.Add(new DataType("bytea", "System.Byte[]")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "bytea",
             });
             dts.Add(new DataType("char", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "char({0})",
             });
             dts.Add(new DataType("character varying", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "character varying({0})",
             });
             dts.Add(new DataType("character", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "character({0})",
             });
             dts.Add(new DataType("date", "System.DateTime")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "date",
             });
             dts.Add(new DataType("dec", "System.Decimal")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "dec",
             });
             dts.Add(new DataType("decimal", "System.Decimal")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "decimal({0},{1})",
             });
             dts.Add(new DataType("double precision", "System.Double")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "double precision",
             });
             dts.Add(new DataType("double", "System.Double")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "double",
             });
             dts.Add(new DataType("float", "System.Single")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "float",
             });
             dts.Add(new DataType("float4", "System.Single")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "float4",
             });
             dts.Add(new DataType("float8", "System.Double")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "float8",
             });
             dts.Add(new DataType("int", "System.Int32")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "int",
             });
             dts.Add(new DataType("int2", "System.Int16")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "int2",
             });
             dts.Add(new DataType("int4", "System.Int32")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "int4",
             });
             dts.Add(new DataType("int8", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "int8",
             });
             dts.Add(new DataType("integer", "System.Int32")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "integer",
             });
             dts.Add(new DataType("interval", "System.TimeSpan")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "interval",
             });
             dts.Add(new DataType("line", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "line",
             });
             dts.Add(new DataType("money", "System.Double")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "money",
             });
             dts.Add(new DataType("numeric", "System.Decimal")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "numeric",
             });
             dts.Add(new DataType("real", "System.Single")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "real",
             });
             dts.Add(new DataType("serial", "System.Int32")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "serial",
             });
             dts.Add(new DataType("serial4", "System.Int32")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "serial4",
             });
             dts.Add(new DataType("serial8", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "serial8",
             });
             dts.Add(new DataType("smallint", "System.Int16")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "smallint",
             });
             dts.Add(new DataType("text", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "text",
             });
             dts.Add(new DataType("time", "System.TimeSpan")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "time",
             });
             dts.Add(new DataType("timestamp", "System.DateTime")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "timestamp",
             });
             dts.Add(new DataType("timestamptz", "System.DateTime")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "timestamptz",
             });
             dts.Add(new DataType("timetz", "System.TimeSpan")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "timetz",
             });
             dts.Add(new DataType("uuid", "System.Guid")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "uuid",
             });
             dts.Add(new DataType("varbit", "System.Int64")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "varbit",
             });
             dts.Add(new DataType("varchar", "System.String")
             {
                 ProviderDbType = 0,
-                CreateFormat = "",
+                CreateFormat = "varchar({0})",
             });
             return dts;
         }

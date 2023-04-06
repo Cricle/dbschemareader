@@ -48,13 +48,26 @@ ORDER BY table_schema, table_name, ordinal_position";
             var schema = Owner;
             var tableName = record["table_name"].ToString();
             var name = record["column_name"].ToString();
+
+            var len = record["character_maximum_length"]?.ToString();
+            var precision = record["numeric_precision"]?.ToString();
+            var scale = record["numeric_scale"]?.ToString();
+            var type = record.GetString("data_type");
+            if (!string.IsNullOrEmpty(len))
+            {
+                type += $"({len})";
+            }
+            if (!string.IsNullOrEmpty(precision))
+            {
+                type += $"({precision},{scale})";
+            }
             var table = new DatabaseColumn
             {
                 SchemaOwner = schema,
                 TableName = tableName,
                 Name = name,
                 Ordinal = record.GetInt("ordinal_position"),
-                DbDataType = record.GetString("data_type"),
+                DbDataType = type,
                 Length = record.GetNullableInt("character_maximum_length"),
                 Precision = record.GetNullableInt("numeric_precision"),
                 Scale = record.GetNullableInt("numeric_scale"),

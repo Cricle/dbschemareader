@@ -17,6 +17,10 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
                 column.DateTimePrecision > 0)
                 dataType = dataType + " (" + column.DateTimePrecision + ")";
 
+            if ((dataType == "VARCHAR" || dataType == "CHAR")&& column.DbDataType != dataType)
+            {
+                return column.DbDataType;
+            }
             //write out datatype definition
             if ((dataType == "VARCHAR" || dataType == "CHAR") && column.Length > 0)
             {
