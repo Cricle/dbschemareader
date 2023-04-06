@@ -60,13 +60,25 @@ where
 
         public static DatabaseColumn Convert(IDataRecord row)
         {
+            var len = row["CHARACTER_MAXIMUM_LENGTH"]?.ToString();
+            var precision = row["NUMERIC_PRECISION"]?.ToString();
+            var scale = row["NUMERIC_SCALE"]?.ToString();
+            var type = row["DATA_TYPE"].ToString();
+            if (!string.IsNullOrEmpty(len))
+            {
+                type += $"({len})";
+            }
+            if (!string.IsNullOrEmpty(precision))
+            {
+                type += $"({precision},{scale})";
+            }
             var column = new DatabaseColumn
             {
                 Name = row["COLUMN_NAME"].ToString(),
                 TableName = row["TABLE_NAME"].ToString(),
                 SchemaOwner = row["TABLE_CATALOG"].ToString(),
                 Ordinal = System.Convert.ToInt32(row["ORDINAL_POSITION"], CultureInfo.CurrentCulture),
-                DbDataType = row["DATA_TYPE"].ToString(),
+                DbDataType = type,
                 Nullable = row.GetBoolean("IS_NULLABLE"),
                 Length = row.GetNullableInt("CHARACTER_MAXIMUM_LENGTH"),
                 Precision = row.GetNullableInt("NUMERIC_PRECISION"),

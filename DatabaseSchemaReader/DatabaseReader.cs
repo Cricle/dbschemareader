@@ -525,9 +525,19 @@ namespace DatabaseSchemaReader
         /// <param name="table">The ref table</param>
         /// <param name="dbType">Target db type</param>
         /// <returns>If the type exists return raw type string, otherwise return null</returns>
-        public string FindDataTypesByDbType(DatabaseSchema table,DbType dbType)
+        public static string FindDataTypesByDbType(DatabaseSchema table,DbType dbType)
         {
             return DataTypeMappingFactory.DataTypeMapper(table).Map(dbType);
+        }
+        /// <summary>
+        /// Given <paramref name="sqlType"/> and <paramref name="dbType"/> to get raw type
+        /// </summary>
+        /// <param name="sqlType">The sql type</param>
+        /// <param name="dbType">The dbtype</param>
+        /// <returns>The raw db type</returns>
+        public static string FindDataTypesByDbType(SqlType sqlType, DbType dbType)
+        {
+            return DataTypeMappingFactory.DataTypeMapper(sqlType).Map(dbType);
         }
 
         /// <inheritdoc cref="FindDataTypesByDbType(DatabaseSchema, DbType)"/>
@@ -535,7 +545,6 @@ namespace DatabaseSchemaReader
         {
             return DataTypeMappingFactory.DataTypeMapper(DatabaseSchema).Map(dbType);
         }
-
         private void UpdateReferences()
         {
             //a simple latch so ReadAll will only call this at the end
