@@ -10,7 +10,10 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
             if (column == null) return string.Empty;
             if (string.IsNullOrEmpty(column.DbDataType)) return string.Empty;
             var dataType = column.DbDataTypeStandard();
-
+            if (!dataType.Equals(column.DbDataType, StringComparison.OrdinalIgnoreCase))
+            {
+                return column.DbDataType;
+            }
             dataType = OtherDatabaseTypesToPostgreSql(dataType, column);
 
             if ((dataType.StartsWith("TIMESTAMP", StringComparison.OrdinalIgnoreCase) || dataType == "TIME") &&
