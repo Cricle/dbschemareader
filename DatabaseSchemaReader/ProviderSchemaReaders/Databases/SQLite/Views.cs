@@ -37,7 +37,7 @@ ORDER BY name";
             var table = new DatabaseView
                         {
                             Name = name,
-                            SchemaOwner = "",
+                            SchemaOwner = "main",
 							Sql = record.GetString("sql"),
                         };
 

@@ -31,7 +31,7 @@ ORDER BY tbl_name, name";
             var trigger = new DatabaseTrigger
             {
                 Name = record.GetString("name"),
-                SchemaOwner = "",
+                SchemaOwner = "main",
                 TableName = record.GetString("tbl_name"),
                 TriggerBody = record.GetString("sql"),
             };

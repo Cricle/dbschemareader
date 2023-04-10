@@ -88,12 +88,12 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
             dts.Add(new DataType("decimal", "System.Decimal")
             {
                 ProviderDbType = 5,
-                CreateFormat = "decimal({0}, {1})",
+                CreateFormat = "decimal({0},{1})",
             });
             dts.Add(new DataType("numeric", "System.Decimal")
             {
                 ProviderDbType = 5,
-                CreateFormat = "numeric({0}, {1})",
+                CreateFormat = "numeric({0},{1})",
             });
             dts.Add(new DataType("datetime", "System.DateTime")
             {

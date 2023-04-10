@@ -105,7 +105,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SQLite
                         var con = new DatabaseConstraint
                         {
                             TableName = tableName,
-                            SchemaOwner = "",
+                            SchemaOwner = "main",
                             ConstraintType = ConstraintType.PrimaryKey,
                         };
                         con.Columns.AddRange(columns);

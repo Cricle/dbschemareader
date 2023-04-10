@@ -38,8 +38,8 @@ ORDER BY name";
             var table = new DatabaseTable
                         {
                             Name = name,
-                            SchemaOwner = ""
-                        };
+                            SchemaOwner = "main"
+            };
 
             Result.Add(table);
         }
