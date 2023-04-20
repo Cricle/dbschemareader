@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using DatabaseSchemaReader.ProviderSchemaReaders.ConnectionContext;
+using System;
 
 namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
 {
@@ -57,7 +58,7 @@ ORDER BY table_schema, table_name, ordinal_position";
             {
                 type += $"({len})";
             }
-            if (!string.IsNullOrEmpty(precision))
+            if (!string.IsNullOrEmpty(precision)&&( "numeric".Equals(type, StringComparison.OrdinalIgnoreCase)|| "decimal".Equals(type, StringComparison.OrdinalIgnoreCase)))
             {
                 type += $"({precision},{scale})";
             }
