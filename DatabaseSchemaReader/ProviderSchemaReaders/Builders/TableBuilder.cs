@@ -147,8 +147,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
                 else
                 {
                     tableCols =
-                       columns.Where(x => string.Equals(x.TableName, tableName, StringComparison.OrdinalIgnoreCase)
-                                          && string.Equals(x.SchemaOwner, schemaName, StringComparison.OrdinalIgnoreCase));
+                       columns.Where(x => string.Equals(x.TableName, tableName)
+                                          && string.Equals(x.SchemaOwner, schemaName));
                 }
                 table.Columns.AddRange(tableCols);
                 UpdateIdentities(table.Columns, identityColumns);
