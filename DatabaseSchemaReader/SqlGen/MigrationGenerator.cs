@@ -420,11 +420,14 @@ namespace DatabaseSchemaReader.SqlGen
             var sb = new StringBuilder();
             if (databaseColumn.IsIndexed)
             {
+                var dropedIndexs=new HashSet<DatabaseIndex>();
                 foreach (var index in databaseTable.Indexes)
                 {
                     if(!index.Columns.Any(c=> string.Equals(c.Name,databaseColumn.Name))) continue;
                     sb.AppendLine(DropIndex(databaseTable, index));
+                    dropedIndexs.Add(index);
                 }
+                databaseTable.Indexes.RemoveAll(x => dropedIndexs.Contains(x));
             }
             if (databaseColumn.IsForeignKey)
             {
