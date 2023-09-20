@@ -420,17 +420,19 @@ namespace DatabaseSchemaReader.SqlGen
             var sb = new StringBuilder();
             if (databaseColumn.IsIndexed)
             {
-                var dropedIndexs=new HashSet<DatabaseIndex>();
+                var dropeds=new HashSet<DatabaseIndex>();
                 foreach (var index in databaseTable.Indexes)
                 {
                     if(!index.Columns.Any(c=> string.Equals(c.Name,databaseColumn.Name))) continue;
                     sb.AppendLine(DropIndex(databaseTable, index));
-                    dropedIndexs.Add(index);
+                    dropeds.Add(index);
                 }
-                databaseTable.Indexes.RemoveAll(x => dropedIndexs.Contains(x));
+                if(dropeds.Count > 0)
+                    databaseTable.Indexes.RemoveAll(x => dropeds.Contains(x));
             }
             if (databaseColumn.IsForeignKey)
             {
+                var dropeds = new HashSet<DatabaseConstraint>();
                 foreach (var foreignKey in databaseTable.ForeignKeys)
                 {
                     if (!foreignKey.Columns.Contains(databaseColumn.Name)) continue;
@@ -439,10 +441,14 @@ namespace DatabaseSchemaReader.SqlGen
                         DropForeignKeyFormat,
                         TableName(databaseTable),
                         Escape(foreignKey.Name)));
+                    dropeds.Add(foreignKey);
                 }
+                if (dropeds.Count > 0)
+                    databaseTable.ForeignKeys.RemoveAll(x => dropeds.Contains(x));
             }
             if (databaseColumn.IsUniqueKey)
             {
+                var dropeds = new HashSet<DatabaseConstraint>();
                 foreach (var uniqueKey in databaseTable.UniqueKeys)
                 {
                     if (!uniqueKey.Columns.Contains(databaseColumn.Name)) continue;
@@ -450,7 +456,10 @@ namespace DatabaseSchemaReader.SqlGen
                         DropForeignKeyFormat,
                         TableName(databaseTable),
                         Escape(uniqueKey.Name)));
+                    dropeds.Add(uniqueKey);
                 }
+                if (dropeds.Count > 0)
+                    databaseTable.UniqueKeys.RemoveAll(x => dropeds.Contains(x));
             }
             if (!SupportsDropColumn)
             {
