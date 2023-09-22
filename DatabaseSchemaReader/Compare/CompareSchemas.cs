@@ -20,6 +20,24 @@ namespace DatabaseSchemaReader.Compare
         private readonly DatabaseSchema _compareSchema;
 
         /// <summary>
+        /// Create from table comapre with table <paramref name="baseTable"/> and <paramref name="compareTable"/>
+        /// </summary>
+        /// <param name="connectString">The connection connect string</param>
+        /// <param name="sqlType">The sql type</param>
+        /// <param name="baseTable">The base table</param>
+        /// <param name="compareTable">The compare table</param>
+        /// <returns></returns>
+        public static CompareSchemas FromTable(string connectString,SqlType sqlType,DatabaseTable baseTable,DatabaseTable compareTable)
+        {
+            var schema1 = new DatabaseSchema(connectString, sqlType);
+            var schema2 = new DatabaseSchema(connectString, sqlType);
+            schema1.AddTable(baseTable);
+            schema2.AddTable(compareTable);
+
+            return new CompareSchemas(schema1, schema2);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CompareSchemas"/> class.
         /// </summary>
         /// <param name="baseSchema">The base schema.</param>

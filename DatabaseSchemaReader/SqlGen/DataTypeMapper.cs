@@ -1,11 +1,26 @@
-﻿using System;
+﻿using DatabaseSchemaReader.DataSchema;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace DatabaseSchemaReader.SqlGen
 {
     abstract class DataTypeMapper
     {
+        public abstract IList<DataType> DataTypes { get; }
+
         public abstract string Map(DbType dbType);
+
+        public virtual DataType MapType(DbType dbType)
+        {
+            var dt = Map(dbType);
+            if (dt == null)
+            {
+                return null;
+            }
+            return DataTypes.FirstOrDefault(x => x.TypeName.StartsWith(dt, StringComparison.OrdinalIgnoreCase));
+        }
 
         public string Map<T>() where T : struct
         {

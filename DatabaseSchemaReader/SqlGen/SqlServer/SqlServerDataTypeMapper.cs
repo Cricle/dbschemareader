@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using DatabaseSchemaReader.DataSchema;
+using System.Collections.Generic;
 using System.Data;
+using DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer;
 
 namespace DatabaseSchemaReader.SqlGen.SqlServer
 {
     sealed class SqlServerDataTypeMapper : DataTypeMapper
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
-        
+
+        public override IList<DataType> DataTypes { get; } = new DataTypes().Execute();
+
         public SqlServerDataTypeMapper()
         {
             Init();

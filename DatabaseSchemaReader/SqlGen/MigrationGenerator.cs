@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using DatabaseSchemaReader.DataSchema;
 using DatabaseSchemaReader.Utilities;
@@ -12,9 +13,11 @@ namespace DatabaseSchemaReader.SqlGen
     {
         private readonly ISqlFormatProvider _sqlFormatProvider;
         private readonly DdlGeneratorFactory _ddlFactory;
+        private readonly SqlType _sqlType;
 
         public MigrationGenerator(SqlType sqlType)
         {
+            _sqlType = sqlType;
             _sqlFormatProvider = SqlFormatFactory.Provider(sqlType);
             _ddlFactory = new DdlGeneratorFactory(sqlType);
             IncludeSchema = false;//(sqlType != SqlType.SqlServerCe && sqlType != SqlType.SQLite);
@@ -103,10 +106,13 @@ namespace DatabaseSchemaReader.SqlGen
                 tableGenerator.IncludeDefaultValues = false;
             }
             var columnDefinition = tableGenerator.WriteColumn(databaseColumn).Trim();
+            var columnDefinitionDataTypeOnly = tableGenerator.WriteDataType(databaseColumn).Trim();
             var originalDefinition = "?";
+            var originalDefinitionDataTypeOnly = "?";
             if (originalColumn != null)
             {
                 originalDefinition = tableGenerator.WriteColumn(originalColumn).Trim();
+                originalDefinitionDataTypeOnly = tableGenerator.WriteDataType(originalColumn).Trim();
                 //we don't specify "NULL" for nullables in tableGenerator, but if it's changed we should
                 if (originalColumn.Nullable && !databaseColumn.Nullable)
                 {
@@ -123,10 +129,12 @@ namespace DatabaseSchemaReader.SqlGen
                 databaseTable.Name,
                 originalDefinition,
                 columnDefinition);
-            if (originalDefinition.Equals(columnDefinition))
+            if (columnDefinitionDataTypeOnly.Equals(originalDefinitionDataTypeOnly))
             {
+                var renameWithTypeSkip = GenerateRename(databaseTable, databaseColumn, originalColumn);
+
                 //most likely faulty sql db structure, skip
-                return "-- skipping alter of " + comment.Substring(2);
+                return "-- skipping alter of " + comment.Substring(2) + Environment.NewLine + renameWithTypeSkip;
             }
             if (!SupportsAlterColumn)
             {
@@ -153,13 +161,27 @@ namespace DatabaseSchemaReader.SqlGen
             //* you can't change datatypes if column used in indexes (incl. primary keys and foreign keys)
             //* and so on...
             //
-
-            return comment +
-                Environment.NewLine +
-                string.Format(CultureInfo.InvariantCulture,
+            var alter = string.Format(CultureInfo.InvariantCulture,
                     AlterColumnFormat,
                     TableName(databaseTable),
                     columnDefinition);
+            var rename = GenerateRename(databaseTable, databaseColumn, originalColumn);
+            return string.Join(Environment.NewLine, rename, comment, alter);
+        }
+
+        protected virtual string GenerateRename(DatabaseTable databaseTable, DatabaseColumn databaseColumn, DatabaseColumn originalColumn)
+        {
+            var rename = string.Empty;
+            if (databaseColumn.Id != null && originalColumn.Id != null &&
+                databaseColumn.Id == originalColumn.Id&&
+                databaseColumn.Name!=originalColumn.Name)
+            {
+                rename = $"-- rename {originalColumn.Name} to {databaseColumn.Name}"+Environment.NewLine;
+                rename += RenameColumn(databaseTable, databaseColumn, originalColumn.Name);
+                // When rename other column operator must use renamed
+                originalColumn.Name = databaseColumn.Name;
+            }
+            return rename;
         }
 
         /// <summary>
@@ -222,22 +244,53 @@ namespace DatabaseSchemaReader.SqlGen
             if (constraintWriter == null) return null;
             constraintWriter.IncludeSchema = IncludeSchema; //cascade setting
             constraintWriter.EscapeNames = EscapeNames;
-            return constraintWriter.WriteConstraint(constraint);
+            var sql= constraintWriter.WriteConstraint(constraint);
+            databaseTable.AddConstraint(constraint);
+            return sql;
         }
-
+        protected void RemoveConstraintInObject(DatabaseTable databaseTable, DatabaseConstraint constraint)
+        {
+            // Remove constraint
+            switch (constraint.ConstraintType)
+            {
+                case ConstraintType.PrimaryKey:
+                    databaseTable.PrimaryKey = null;
+                    break;
+                case ConstraintType.ForeignKey:
+                    databaseTable.ForeignKeys.Remove(constraint);
+                    break;
+                case ConstraintType.UniqueKey:
+                    databaseTable.UniqueKeys.Remove(constraint);
+                    break;
+                case ConstraintType.Check:
+                    databaseTable.CheckConstraints.Remove(constraint);
+                    break;
+                case ConstraintType.Default:
+                    databaseTable.DefaultConstraints.Remove(constraint);
+                    break;
+                default:
+                    break;
+            }
+        }
         public virtual string DropConstraint(DatabaseTable databaseTable, DatabaseConstraint constraint)
         {
+            string sql = string.Empty;
             if (constraint.ConstraintType == ConstraintType.UniqueKey)
             {
-                return string.Format(CultureInfo.InvariantCulture,
+                sql = string.Format(CultureInfo.InvariantCulture,
                                      DropUniqueFormat,
                                      TableName(databaseTable),
                                      Escape(constraint.Name)) + LineEnding();
             }
-            return string.Format(CultureInfo.InvariantCulture,
-                                 DropForeignKeyFormat,
-                                 TableName(databaseTable),
-                                 Escape(constraint.Name)) + LineEnding();
+            else
+            {
+                sql = string.Format(CultureInfo.InvariantCulture,
+                                     DropForeignKeyFormat,
+                                     TableName(databaseTable),
+                                     Escape(constraint.Name)) + LineEnding();
+            }
+            RemoveConstraintInObject(databaseTable,constraint);
+            return sql;
         }
 
         public string AddView(DatabaseView view)
@@ -329,21 +382,26 @@ namespace DatabaseSchemaReader.SqlGen
 
         public virtual string DropIndex(DatabaseTable databaseTable, DatabaseIndex index)
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            var sql= string.Format(CultureInfo.InvariantCulture,
                 "DROP INDEX {0}{1} ON {2};",
                 SchemaPrefix(index.SchemaOwner),
                 Escape(index.Name),
                 TableName(databaseTable));
+
+            databaseTable.Indexes.Remove(index);
+            return sql;
         }
 
         public virtual string AddTrigger(DatabaseTable databaseTable, DatabaseTrigger trigger)
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            var sql= string.Format(CultureInfo.InvariantCulture,
                 @"-- CREATE TRIGGER {0}{1} {2} ON {3};",
                 SchemaPrefix(trigger.SchemaOwner),
                 Escape(trigger.Name),
                 trigger.TriggerEvent,
                 TableName(databaseTable));
+            databaseTable.Triggers.Remove(trigger);
+            return sql;
         }
         protected virtual string DropTriggerFormat
         {
@@ -401,7 +459,7 @@ namespace DatabaseSchemaReader.SqlGen
                 indexType, //must have trailing space
                 Escape(index.Name),
                 TableName(databaseTable),
-                GetColumnList(index.Columns.Select(i => i.Name))) + LineEnding();
+                GetColumnList(index.Columns.Select(i => i.Name), index.ColumnOrderDescs ?? Enumerable.Empty<bool>())) + LineEnding();
         }
 
         protected virtual string DropForeignKeyFormat
@@ -420,15 +478,32 @@ namespace DatabaseSchemaReader.SqlGen
             var sb = new StringBuilder();
             if (databaseColumn.IsIndexed)
             {
-                var dropeds=new HashSet<DatabaseIndex>();
+                var dropeds = new HashSet<DatabaseIndex>();
                 foreach (var index in databaseTable.Indexes)
                 {
-                    if(!index.Columns.Any(c=> string.Equals(c.Name,databaseColumn.Name))) continue;
+                    if (!index.Columns.Any(c => string.Equals(c.Name, databaseColumn.Name))) continue;
                     sb.AppendLine(DropIndex(databaseTable, index));
                     dropeds.Add(index);
                 }
-                if(dropeds.Count > 0)
-                    databaseTable.Indexes.RemoveAll(x => dropeds.Contains(x));
+                if (dropeds.Count > 0)
+                {
+                    foreach (var item in dropeds)
+                    {
+                        var idx = item.Columns.IndexOf(databaseColumn);
+                        if (idx != -1)
+                        {
+                            item.Columns.Remove(databaseColumn);
+                            if (item.ColumnOrderDescs.Count>=idx)
+                            {
+                                item.ColumnOrderDescs.RemoveAt(idx);
+                            }
+                        }
+                        if (item.Columns.Count==0)
+                        {
+                            databaseTable.Indexes.Remove(item);
+                        }
+                    }
+                }
             }
             if (databaseColumn.IsForeignKey)
             {
@@ -444,7 +519,16 @@ namespace DatabaseSchemaReader.SqlGen
                     dropeds.Add(foreignKey);
                 }
                 if (dropeds.Count > 0)
-                    databaseTable.ForeignKeys.RemoveAll(x => dropeds.Contains(x));
+                {
+                    foreach (var item in dropeds)
+                    {
+                        item.Columns.Remove(databaseColumn.Name);
+                        if (item.Columns.Count == 0)
+                        {
+                            databaseTable.ForeignKeys.Remove(item);
+                        }
+                    }
+                }
             }
             if (databaseColumn.IsUniqueKey)
             {
@@ -459,7 +543,16 @@ namespace DatabaseSchemaReader.SqlGen
                     dropeds.Add(uniqueKey);
                 }
                 if (dropeds.Count > 0)
-                    databaseTable.UniqueKeys.RemoveAll(x => dropeds.Contains(x));
+                {
+                    foreach (var item in dropeds)
+                    {
+                        item.Columns.Remove(databaseColumn.Name);
+                        if (item.Columns.Count == 0)
+                        {
+                            databaseTable.UniqueKeys.Remove(item);
+                        }
+                    }
+                }
             }
             if (!SupportsDropColumn)
             {
@@ -478,10 +571,13 @@ namespace DatabaseSchemaReader.SqlGen
 
         public virtual string DropDefault(DatabaseTable databaseTable, DatabaseColumn databaseColumn)
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            var sql= string.Format(CultureInfo.InvariantCulture,
                                  "ALTER TABLE {0} ALTER COLUMN {1} DROP DEFAULT;",
                                  TableName(databaseTable),
                                  Escape(databaseColumn.Name));
+
+            databaseColumn.DefaultValue = null;
+            return sql;
         }
 
         /// <summary>
@@ -562,9 +658,29 @@ namespace DatabaseSchemaReader.SqlGen
             return string.Empty;
         }
 
-        protected string GetColumnList(IEnumerable<string> columns)
+        protected string GetColumnList(IEnumerable<string> columns, IEnumerable<bool> descs)
         {
-            var escapedColumnNames = columns.Select(column => Escape(column)).ToArray();
+            var escapedColumnNames = new List<string>();
+            using (var enuColumn = columns.GetEnumerator())
+            using (var enuDesc = descs.GetEnumerator())
+            {
+                var hasDesc = true;
+                while (enuColumn.MoveNext())
+                {
+                    if (hasDesc)
+                    {
+                        hasDesc = enuDesc.MoveNext();
+                    }
+                    if (_sqlType == SqlType.SQLite|| !hasDesc)
+                    {
+                        escapedColumnNames.Add($"{Escape(enuColumn.Current)}");
+                    }
+                    else
+                    {
+                        escapedColumnNames.Add($"{Escape(enuColumn.Current)} {(enuDesc.Current ? "ASC" : "DESC")}");
+                    }
+                }
+            }
             return string.Join(", ", escapedColumnNames);
         }
     }

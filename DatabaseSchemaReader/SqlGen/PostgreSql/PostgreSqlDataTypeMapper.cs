@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DatabaseSchemaReader.DataSchema;
+using DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -7,6 +9,8 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
     class PostgreSqlDataTypeMapper : DataTypeMapper
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
+
+        public override IList<DataType> DataTypes { get; } = new DataTypeList().Execute();
 
         public PostgreSqlDataTypeMapper()
         {
@@ -24,7 +28,7 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
             _mapping.Add(DbType.DateTime, "TIMESTAMP");
             _mapping.Add(DbType.DateTime2, "TIMESTAMP");
             _mapping.Add(DbType.DateTimeOffset, "TIMESTAMP WITH TIME ZONE");
-            _mapping.Add(DbType.Decimal, "DECIMAL");
+            _mapping.Add(DbType.Decimal, "NUMERIC");
             _mapping.Add(DbType.Double, "DOUBLE PRECISION");
             _mapping.Add(DbType.Guid, "UUID");
             _mapping.Add(DbType.Int16, "SMALLINT");

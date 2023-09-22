@@ -22,7 +22,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
     i.relname as index_name,
     a.attname as column_name,
     a.attnum as ordinal,
-    ix.indisunique as is_unique
+    ix.indisunique as is_unique,
+    indoption
 FROM
     pg_catalog.pg_class i 
 JOIN
@@ -80,6 +81,8 @@ ORDER BY
                 Name = colName,
                 Ordinal = record.GetInt("ordinal")
             };
+            var desc = record.GetInt("indoption");
+            index.ColumnOrderDescs.Add(desc != 0);
             index.Columns.Add(col);
         }
     }

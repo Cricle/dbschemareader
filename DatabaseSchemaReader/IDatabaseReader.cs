@@ -58,6 +58,10 @@ namespace DatabaseSchemaReader
         IList<DatabaseStoredProcedure> StoredProcedureList();
 
         /// <summary>
+        /// Gets all tables with columns and datatypes but nothing else (no constraints, indexes or triggers).
+        /// </summary>
+        IList<DatabaseTable> TablesQuickView();
+        /// <summary>
         /// Gets all stored procedures (and functions) with their arguments
         /// </summary>
         /// <remarks>

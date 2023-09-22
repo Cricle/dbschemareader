@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using DatabaseSchemaReader.DataSchema;
+using DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServerCe;
+using System.Collections.Generic;
 using System.Data;
 
 namespace DatabaseSchemaReader.SqlGen.SqlServerCe
@@ -7,10 +9,8 @@ namespace DatabaseSchemaReader.SqlGen.SqlServerCe
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
 
-        public SqlServerCeDataTypeMapper()
-        {
-            Init();
-        }
+        public override IList<DataType> DataTypes { get; }= new DataTypeList().Execute();
+
         private void Init()
         {
             _mapping.Add(DbType.AnsiStringFixedLength, "CHAR");

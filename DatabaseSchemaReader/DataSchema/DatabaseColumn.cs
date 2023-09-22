@@ -22,7 +22,17 @@ namespace DatabaseSchemaReader.DataSchema
         {
             ForeignKeyTableNames = new List<string>();
         }
+        #region User data
 
+        /// <summary>
+        /// Gets or sets the database column identity as object, by dynamic table rename operator always use id for comparer
+        /// </summary>
+        /// <remarks>
+        /// It was provide use data for compare the column is rename or new column
+        /// </remarks>
+        public object Id { get; set; }
+
+        #endregion
         #region Basic Properties
 
         /// <summary>

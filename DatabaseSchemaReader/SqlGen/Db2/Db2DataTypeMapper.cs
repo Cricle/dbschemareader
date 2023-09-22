@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DatabaseSchemaReader.DataSchema;
+using System.Collections.Generic;
 using System.Data;
 
 namespace DatabaseSchemaReader.SqlGen.Db2
@@ -6,6 +7,8 @@ namespace DatabaseSchemaReader.SqlGen.Db2
     class Db2DataTypeMapper : DataTypeMapper
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
+
+        public override IList<DataType> DataTypes => throw new System.NotImplementedException();
 
         public Db2DataTypeMapper()
         {

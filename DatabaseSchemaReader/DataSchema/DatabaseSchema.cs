@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DatabaseSchemaReader.ProviderSchemaReaders.Adapters;
+using DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -63,7 +65,7 @@ namespace DatabaseSchemaReader.DataSchema
         {
             ConnectionString = connectionString;
             Provider = providerName;
-
+            var sqlType = ProviderToSqlType.Convert(providerName);
             _packages = new List<DatabasePackage>();
             _views = new List<DatabaseView>();
             _users = new List<DatabaseUser>();
@@ -73,6 +75,10 @@ namespace DatabaseSchemaReader.DataSchema
             _storedProcedures = new List<DatabaseStoredProcedure>();
             _dataTypes = new List<DataType>();
             _schemas = new List<DatabaseDbSchema>();
+            if (sqlType != null)
+            {
+                AddDataTypes(sqlType.Value);
+            }
         }
 
         /// <summary>
@@ -173,6 +179,16 @@ namespace DatabaseSchemaReader.DataSchema
         public override string ToString()
         {
             return string.Format(CultureInfo.InvariantCulture, "Tables: {0}, Views: {1}, StoredProcedures: {2}", Tables.Count, Views.Count, StoredProcedures.Count);
+        }
+        /// <summary>
+        /// Add the data types to <see cref="DataTypes"/> from <paramref name="sqlType"/>
+        /// </summary>
+        /// <param name="sqlType">The sql type</param>
+        public void AddDataTypes(SqlType sqlType)
+        {
+            _dataTypes.Clear();
+            var adapter=ReaderAdapterFactory.Create(new ProviderSchemaReaders.SchemaParameters(string.Empty, sqlType));
+            _dataTypes.AddRange(adapter.DataTypes());
         }
     }
 }

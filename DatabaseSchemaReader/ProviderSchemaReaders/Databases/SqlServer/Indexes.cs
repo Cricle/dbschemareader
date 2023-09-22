@@ -24,7 +24,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServer
 	 IsPrimary = is_primary_key,
 	 IsUnique = is_unique,
 	 Ordinal = ic.key_ordinal,
-	 Filter = ind.filter_definition
+	 Filter = ind.filter_definition,
+	 IsDescendingKey=ic.is_descending_key
 FROM 
 	 sys.indexes ind 
 INNER JOIN 
@@ -81,6 +82,8 @@ ORDER BY
 				Name = colName,
 				Ordinal = record.GetInt("Ordinal")
 			};
+			var desc = record.GetInt("IsDescendingKey");
+			index.ColumnOrderDescs.Add(desc != 0);
 			index.Columns.Add(col);
 
 		}

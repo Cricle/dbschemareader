@@ -18,6 +18,8 @@ namespace DatabaseSchemaReader.DataSchema
         //backing fields
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly List<DatabaseColumn> _columns;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly List<bool> _columnOrderDescs;
         #endregion
 
 
@@ -27,6 +29,7 @@ namespace DatabaseSchemaReader.DataSchema
         public DatabaseIndex()
         {
             _columns = new List<DatabaseColumn>();
+            _columnOrderDescs = new List<bool>();
         }
 
 
@@ -58,6 +61,11 @@ namespace DatabaseSchemaReader.DataSchema
         /// Gets the indexed columns.
         /// </summary>
         public List<DatabaseColumn> Columns { get { return _columns; } }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance columns is desc.
+        /// </summary>
+        public List<bool> ColumnOrderDescs { get { return _columnOrderDescs; } }
 
         /// <summary>
         /// Filtered index definition (where ...)

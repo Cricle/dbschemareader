@@ -51,6 +51,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.MySql
                 Ordinal = record.GetInt("Seq_in_index"),
             };
             index.Columns.Add(col);
+            var desc = record.GetString("Collation").Trim().Equals("D", StringComparison.OrdinalIgnoreCase);
+            index.ColumnOrderDescs.Add(desc);
         }
 
         public IList<DatabaseIndex> Execute(IConnectionAdapter connectionAdapter)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace DatabaseSchemaReader.DataSchema
 {
@@ -10,6 +11,11 @@ namespace DatabaseSchemaReader.DataSchema
     [Serializable]
     public partial class DataType
     {
+        /// <summary>
+        /// The regex for data type match format args like <code>DECIMAL({0},{1})</code>
+        /// </summary>
+        public static readonly Regex ArgsRegex = new Regex("({.*?})", RegexOptions.Compiled);
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private bool? _isString;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -67,6 +73,11 @@ namespace DatabaseSchemaReader.DataSchema
         ///The name of the .NET Framework type of the data type.
         ///</summary>
         public string NetDataType { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="CreateFormat"/> arg count
+        /// </summary>
+        public int ArgCount => string.IsNullOrEmpty(CreateFormat) ? 0 : ArgsRegex.Match(CreateFormat).Length;
 
         /// <summary>
         /// Gets the name of the C# net data type.

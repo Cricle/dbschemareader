@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using DatabaseSchemaReader.DataSchema;
+using DatabaseSchemaReader.ProviderSchemaReaders.Databases.Oracle;
+using System.Collections.Generic;
 using System.Data;
 
 namespace DatabaseSchemaReader.SqlGen.Oracle
@@ -6,6 +8,8 @@ namespace DatabaseSchemaReader.SqlGen.Oracle
     class OracleDataTypeMapper : DataTypeMapper
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
+
+        public override IList<DataType> DataTypes { get; } = new DataTypeList().Execute();
 
         public OracleDataTypeMapper()
         {

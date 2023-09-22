@@ -30,7 +30,7 @@ namespace DatabaseSchemaReader.SqlGen
         {
             return EscapeNames? SqlFormatProvider().Escape(name) : name;
         }
-        protected abstract string WriteDataType(DatabaseColumn column);
+        public abstract string WriteDataType(DatabaseColumn column);
         protected abstract string NonNativeAutoIncrementWriter();
 
         protected abstract string ConstraintWriter();

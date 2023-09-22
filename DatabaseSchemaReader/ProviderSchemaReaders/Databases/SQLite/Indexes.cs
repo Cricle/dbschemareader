@@ -72,6 +72,7 @@ ORDER BY tbl_name, name";
                                 SchemaOwner = "main",
                                 Ordinal = ordinal,
                             };
+                            index.ColumnOrderDescs.Add(false);
                             index.Columns.Add(col);
                             ordinal++;
                         }

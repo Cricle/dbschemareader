@@ -36,5 +36,12 @@ namespace DatabaseSchemaReader.SqlGen
         /// <param name="column">The column.</param>
         /// <returns></returns>
         string WriteColumn(DatabaseColumn column);
+
+        /// <summary>
+        /// Write the data type.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <returns></returns>
+        string WriteDataType(DatabaseColumn column);
     }
 }

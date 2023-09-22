@@ -272,10 +272,7 @@ namespace DatabaseSchemaReader
                 return _readerAdapter.Tables(null);
             }
         }
-
-        /// <summary>
-        /// Gets all tables with columns and datatypes but nothing else (no constraints, indexes or triggers).
-        /// </summary>
+        /// <inheritdoc/>
         public IList<DatabaseTable> TablesQuickView()
         {
             RaiseReadingProgress(SchemaObjectType.Tables);
@@ -535,9 +532,19 @@ namespace DatabaseSchemaReader
         /// <param name="sqlType">The sql type</param>
         /// <param name="dbType">The dbtype</param>
         /// <returns>The raw db type</returns>
-        public static string FindDataTypesByDbType(SqlType sqlType, DbType dbType)
+        public static string FindDataTypeStringByDbType(SqlType sqlType, DbType dbType)
         {
             return DataTypeMappingFactory.DataTypeMapper(sqlType).Map(dbType);
+        }
+        /// <summary>
+        /// Find <see cref="DataType"/> by <see cref="SqlType"/>
+        /// </summary>
+        /// <param name="sqlType">The sql type</param>
+        /// <param name="dbType">the db type</param>
+        /// <returns></returns>
+        public static DataType FindDataTypesByDbType(SqlType sqlType, DbType dbType)
+        {
+            return DataTypeMappingFactory.DataTypeMapper(sqlType).MapType(dbType);
         }
 
         /// <inheritdoc cref="FindDataTypesByDbType(DatabaseSchema, DbType)"/>

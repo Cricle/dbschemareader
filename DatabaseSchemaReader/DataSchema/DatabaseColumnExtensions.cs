@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DatabaseSchemaReader.SqlGen;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -57,7 +60,79 @@ namespace DatabaseSchemaReader.DataSchema
                 dataType = dataType.Substring(0, space);
             return dataType;
         }
+        /// <summary>
+        /// Set column type by raw type string <paramref name="dataType"/>
+        /// </summary>
+        /// <param name="column">Target column</param>
+        /// <param name="dataType">Raw type string</param>
+        public static void SetType(this DatabaseColumn column,string dataType)
+        {
+            var copColumn = DataTypeConverter.ParseDataType(dataType);
+            column.DbDataType = copColumn.DbDataType;
+            column.Length = copColumn.Length;
+            column.Precision = copColumn.Precision;
+            column.Scale = copColumn.Scale;
+        }
+        /// <summary>
+        /// Set column type by <see cref="SqlType"/>
+        /// </summary>
+        /// <param name="column">Target column</param>
+        /// <param name="sqlType">The sqltype for database</param>
+        /// <param name="dbType">The dbType for column</param>
+        /// <param name="args">Provide args for dataType</param>
+        public static bool SetType(this DatabaseColumn column, SqlType sqlType, DbType dbType, params object[] args)
+        {
+            var type = DatabaseReader.FindDataTypesByDbType(sqlType, dbType);
+            if (type==null)
+            {
+                return false;
+            }
 
+            var dbTypeString = string.Format(type.CreateFormat, args);
+
+            SetType(column, dbTypeString);
+            return true;
+        }
+        /// <summary>
+        /// Check <paramref name="dbType"/> is string type
+        /// </summary>
+        /// <param name="dbType">The db type</param>
+        /// <returns></returns>
+        public static bool IsString(DbType dbType)
+        {
+            switch (dbType)
+            {
+                case DbType.AnsiString:
+                case DbType.AnsiStringFixedLength:
+                case DbType.String:
+                case DbType.StringFixedLength:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        /// <summary>
+        /// Set the db type use <see cref="SetType(DatabaseColumn, SqlType, DbType, object[])"/> the arg use <paramref name="column"/> data
+        /// </summary>
+        /// <param name="column">The column</param>
+        /// <param name="sqlType">The sql type</param>
+        /// <param name="dbType">The db type</param>
+        /// <returns></returns>
+        public static bool SetTypeDefault(this DatabaseColumn column, SqlType sqlType, DbType dbType)
+        {
+            var args = new List<object>();
+            //Is string?
+            if (IsString(dbType))
+            {
+                args.Add(column.Length);
+            }
+            if (dbType== DbType.Decimal)
+            {
+                args.Add(column.Precision);
+                args.Add(column.Scale);
+            }
+            return SetType(column, sqlType, dbType, args.ToArray());
+        }
         /// <summary>
         /// Data type definition (suitable for DDL).
         /// </summary>

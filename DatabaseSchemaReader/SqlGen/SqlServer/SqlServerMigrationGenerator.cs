@@ -92,6 +92,7 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
                 sb.AppendLine("ALTER TABLE " + TableName(databaseTable)
                               + " DROP CONSTRAINT IF EXISTS " + Escape(df.Name) + ";");
             }
+            databaseColumn.DefaultValue = null;
             return sb.ToString();
         }
         public override string AddTrigger(DatabaseTable databaseTable, DatabaseTrigger trigger)
@@ -106,7 +107,9 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
             if (string.IsNullOrEmpty(trigger.TriggerBody))
                 return "-- add trigger " + trigger.Name;
 
-            return trigger.TriggerBody + ";";
+            var sql= trigger.TriggerBody + ";";
+            databaseTable.Triggers.Add(trigger);
+            return sql;
         }
 
         public override string RenameColumn(DatabaseTable databaseTable, DatabaseColumn databaseColumn, string originalColumnName)
@@ -155,13 +158,15 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
                 indexType, //must have trailing space
                 Escape(index.Name),
                 TableName(databaseTable),
-                GetColumnList(index.Columns.Select(i => i.Name)),
+                GetColumnList(index.Columns.Select(i => i.Name), index.ColumnOrderDescs ?? Enumerable.Empty<bool>()),
                 clustered);
             if (!string.IsNullOrEmpty(index.Filter))
             {
                 format = $"{format} WHERE {index.Filter}";
             }
-            return format + LineEnding();
+            var sql = format + LineEnding();
+            databaseTable.AddIndex(index);
+            return sql;
         }
     }
 }
