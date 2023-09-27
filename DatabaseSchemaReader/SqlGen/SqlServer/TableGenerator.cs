@@ -113,7 +113,8 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
             if (!Table.Indexes.Any()) return;
 
             var migration = CreateMigrationGenerator();
-            foreach (var index in Table.Indexes)
+            var indexsCopy = Table.Indexes.ToList();
+            foreach (var index in indexsCopy)
             {
                 if (index.IsUniqueKeyIndex(Table)) continue;
                 //are all indexed columns in table? 

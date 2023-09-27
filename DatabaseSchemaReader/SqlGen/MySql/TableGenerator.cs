@@ -85,11 +85,7 @@ namespace DatabaseSchemaReader.SqlGen.MySql
                 EscapeNames = EscapeNames
             };
 
-            //single primary keys done inline
-            if (Table.PrimaryKey != null && Table.PrimaryKey.Columns.Count > 1)
-            {
-                sb.AppendLine(constraintWriter.WritePrimaryKey());
-            }
+            sb.AppendLine(constraintWriter.WritePrimaryKey());
 
             sb.AppendLine(constraintWriter.WriteUniqueKeys());
             sb.AppendLine(constraintWriter.WriteCheckConstraints());

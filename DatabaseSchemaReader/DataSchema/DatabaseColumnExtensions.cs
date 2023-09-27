@@ -65,13 +65,15 @@ namespace DatabaseSchemaReader.DataSchema
         /// </summary>
         /// <param name="column">Target column</param>
         /// <param name="dataType">Raw type string</param>
-        public static void SetType(this DatabaseColumn column,string dataType)
+        /// <returns>The <paramref name="column"/></returns>
+        public static DatabaseColumn SetType(this DatabaseColumn column,string dataType)
         {
             var copColumn = DataTypeConverter.ParseDataType(dataType);
-            column.DbDataType = copColumn.DbDataType;
+            column.DbDataType = dataType;
             column.Length = copColumn.Length;
             column.Precision = copColumn.Precision;
             column.Scale = copColumn.Scale;
+            return column;
         }
         /// <summary>
         /// Set column type by <see cref="SqlType"/>
@@ -80,18 +82,20 @@ namespace DatabaseSchemaReader.DataSchema
         /// <param name="sqlType">The sqltype for database</param>
         /// <param name="dbType">The dbType for column</param>
         /// <param name="args">Provide args for dataType</param>
-        public static bool SetType(this DatabaseColumn column, SqlType sqlType, DbType dbType, params object[] args)
+        /// <returns>The <paramref name="column"/></returns>
+        public static DatabaseColumn SetType(this DatabaseColumn column, SqlType sqlType, DbType dbType, params object[] args)
         {
             var type = DatabaseReader.FindDataTypesByDbType(sqlType, dbType);
+            column.DataType = type;
             if (type==null)
             {
-                return false;
+                return column;
             }
 
             var dbTypeString = string.Format(type.CreateFormat, args);
 
             SetType(column, dbTypeString);
-            return true;
+            return column;
         }
         /// <summary>
         /// Check <paramref name="dbType"/> is string type
@@ -117,8 +121,8 @@ namespace DatabaseSchemaReader.DataSchema
         /// <param name="column">The column</param>
         /// <param name="sqlType">The sql type</param>
         /// <param name="dbType">The db type</param>
-        /// <returns></returns>
-        public static bool SetTypeDefault(this DatabaseColumn column, SqlType sqlType, DbType dbType)
+        /// <returns>The <paramref name="column"/></returns>
+        public static DatabaseColumn SetTypeDefault(this DatabaseColumn column, SqlType sqlType, DbType dbType)
         {
             var args = new List<object>();
             //Is string?
@@ -130,6 +134,10 @@ namespace DatabaseSchemaReader.DataSchema
             {
                 args.Add(column.Precision);
                 args.Add(column.Scale);
+            }
+            if (dbType== DbType.Single|| dbType== DbType.Double)
+            {
+                args.Add(53);
             }
             return SetType(column, sqlType, dbType, args.ToArray());
         }
