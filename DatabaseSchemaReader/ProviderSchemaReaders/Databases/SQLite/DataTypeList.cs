@@ -198,7 +198,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.SQLite
             dts.Add(new DataType("text", "System.String")
             {
                 ProviderDbType = 16,
-                CreateFormat = "text({0})",
+                CreateFormat = "text",
                 LiteralPrefix = "'",
                 LiteralSuffix = "'",
             });
