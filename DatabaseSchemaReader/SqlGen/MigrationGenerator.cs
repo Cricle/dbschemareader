@@ -173,7 +173,7 @@ namespace DatabaseSchemaReader.SqlGen
         {
             var rename = string.Empty;
             if (databaseColumn.Id != null && originalColumn.Id != null &&
-                databaseColumn.Id == originalColumn.Id&&
+                Equals(databaseColumn.Id , originalColumn.Id)&&
                 databaseColumn.Name!=originalColumn.Name)
             {
                 rename = $"-- rename {originalColumn.Name} to {databaseColumn.Name}"+Environment.NewLine;

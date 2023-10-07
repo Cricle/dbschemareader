@@ -22,6 +22,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Adapters
                     return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.SqlServerCe.DataTypeList().Execute();
                 case SqlType.PostgreSql:
                     return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql.DataTypeList().Execute();
+                case SqlType.DuckdDB:
+                    return new DatabaseSchemaReader.ProviderSchemaReaders.Databases.DuckDB.DataTypeList().Execute();
                 case SqlType.Db2:
                 default:
                     return new DataType[0];
@@ -49,7 +51,9 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Adapters
                 case SqlType.SqlServerCe:
                     schemaReader = new SqlServerCeAdapter(schemaParameters);
                     break;
-
+                case SqlType.DuckdDB:
+                    schemaReader=new DuckDBAdapter(schemaParameters);
+                    break;
                 default:
                     //var providerName = schemaParameters.ProviderName;
                     //all the other types

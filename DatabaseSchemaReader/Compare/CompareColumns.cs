@@ -27,7 +27,7 @@ namespace DatabaseSchemaReader.Compare
                 var match = baseTable.Columns.FirstOrDefault(t => t.Name == name);
                 if (match != null) continue;
                 // Check the column id has any in base table
-                if (column.Id!=null&&baseTable.Columns.Any(x=>x.Id==column.Id)) continue;
+                if (column.Id!=null&&baseTable.Columns.Any(x=>Equals( x.Id,column.Id))) continue;
                 var script = "-- ADDED TABLE " + column.TableName + " COLUMN " + name + Environment.NewLine +
                  _writer.AddColumn(compareTable, column);
                 copy.AddColumn(column);
@@ -45,7 +45,7 @@ namespace DatabaseSchemaReader.Compare
                 {
                     if (column.Id != null)
                     {
-                        match = compareTable.Columns.FirstOrDefault(t => t.Id == column.Id);
+                        match = compareTable.Columns.FirstOrDefault(t => Equals(t.Id , column.Id));
                         if (match == null)
                         {
                             toDrop.Add(name, column);
@@ -104,8 +104,11 @@ namespace DatabaseSchemaReader.Compare
                     if (column.Id == null || match.Id == null ||
                         column.Id != match.Id)
                     {
-                        //we don't check IDENTITY
-                        continue; //the same, no action
+                        if (column.Name == match.Name)
+                        {
+                            //we don't check IDENTITY
+                            continue; //the same, no action
+                        }
                     }
                 }
                 toAlter.Add(name, new[] { match, column });

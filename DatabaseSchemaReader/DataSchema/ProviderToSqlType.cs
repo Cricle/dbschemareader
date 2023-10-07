@@ -39,6 +39,8 @@ namespace DatabaseSchemaReader.DataSchema
                 return SqlType.PostgreSql;
             if (providerName.Equals("IBM.Data.DB2", StringComparison.OrdinalIgnoreCase))
                 return SqlType.Db2;
+            if (providerName.Equals("DuckDB.NET.Data", StringComparison.OrdinalIgnoreCase))
+                return SqlType.DuckdDB;
 
             //could be something we don't have a direct syntax for
             return null;
@@ -67,6 +69,8 @@ namespace DatabaseSchemaReader.DataSchema
                     return "Npgsql";
                 case SqlType.Db2:
                     return "IBM.Data.DB2";
+                case SqlType.DuckdDB:
+                    return "DuckDB.NET.Data";
                 default:
                     return null;
             }

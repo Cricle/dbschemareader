@@ -132,8 +132,8 @@ namespace DatabaseSchemaReader.DataSchema
             }
             if (dbType== DbType.Decimal)
             {
-                args.Add(column.Precision);
-                args.Add(column.Scale);
+                args.Add(column.Precision??18);
+                args.Add(column.Scale??2);
             }
             if (dbType== DbType.Single|| dbType== DbType.Double)
             {

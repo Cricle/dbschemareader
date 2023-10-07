@@ -40,6 +40,8 @@ namespace DatabaseSchemaReader.SqlGen
                     return new SqlServerCe.TableGenerator(table);
                 case SqlType.PostgreSql:
                     return new PostgreSql.TableGenerator(table);
+                case SqlType.DuckdDB:
+                    return new DuckDB.TableGenerator(table);
                 case SqlType.Db2:
                     return new Db2.TableGenerator(table);
             }
@@ -67,6 +69,8 @@ namespace DatabaseSchemaReader.SqlGen
                     return new SqlServerCe.TablesGenerator(schema);
                 case SqlType.PostgreSql:
                     return new PostgreSql.TablesGenerator(schema);
+                case SqlType.DuckdDB:
+                    return new DuckDB.TablesGenerator(schema);
                 case SqlType.Db2:
                     return new Db2.TablesGenerator(schema);
             }
@@ -94,6 +98,8 @@ namespace DatabaseSchemaReader.SqlGen
                     return null; //no stored procedures in SqlServerCE
                 case SqlType.PostgreSql:
                     return null; //for now
+                case SqlType.DuckdDB:
+                    return null;
                 case SqlType.Db2:
                     return new Db2.ProcedureGenerator(table);
             }
@@ -121,6 +127,8 @@ namespace DatabaseSchemaReader.SqlGen
                     return new SqlServer.ConstraintWriter(databaseTable);
                 case SqlType.PostgreSql:
                     return new PostgreSql.ConstraintWriter(databaseTable);
+                case SqlType.DuckdDB:
+                    return null;
                 case SqlType.Db2:
                     return new Db2.ConstraintWriter(databaseTable);
             }
@@ -147,6 +155,8 @@ namespace DatabaseSchemaReader.SqlGen
                     return new SqlServerCe.SqlServerCeMigrationGenerator();
                 case SqlType.PostgreSql:
                     return new PostgreSql.PostgreSqlMigrationGenerator();
+                case SqlType.DuckdDB:
+                    return new DuckDB.DuckDBMigrationGenerator();
                 case SqlType.Db2:
                     return new Db2.Db2MigrationGenerator();
             }

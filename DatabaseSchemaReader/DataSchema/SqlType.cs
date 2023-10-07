@@ -37,6 +37,10 @@ namespace DatabaseSchemaReader.DataSchema
         /// IBM DB2
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Db")]
-        Db2
+        Db2,
+        /// <summary>
+        /// The duck db
+        /// </summary>
+        DuckdDB
     }
 }
