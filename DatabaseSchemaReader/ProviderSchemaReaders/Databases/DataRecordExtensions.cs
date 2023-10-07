@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Data;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 
 namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases
@@ -18,7 +20,19 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases
             var value = record[fieldName];
             try
             {
-                return (value != DBNull.Value) ? System.Convert.ToInt32(value, CultureInfo.CurrentCulture) : (int?)null;
+                if (value is IEnumerable enumerable)
+                {
+                    var enu = enumerable.GetEnumerator();
+                    if (enu.MoveNext())
+                    {
+                        value = enu.Current;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                return (value != DBNull.Value&&value!=null) ? System.Convert.ToInt32(value, CultureInfo.CurrentCulture) : (int?)null;
             }
             catch (OverflowException)
             {

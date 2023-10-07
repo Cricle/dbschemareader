@@ -32,7 +32,7 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
             _mapping.Add(DbType.Guid, "TEXT");
             _mapping.Add(DbType.Int16, "INTEGER");
             _mapping.Add(DbType.Int32, "INTEGER");
-            _mapping.Add(DbType.Int64, "INTEGER");
+            _mapping.Add(DbType.Int64, "NUMERIC");
             _mapping.Add(DbType.Single, "NUMERIC");
             _mapping.Add(DbType.StringFixedLength, "TEXT");
             _mapping.Add(DbType.String, "TEXT");

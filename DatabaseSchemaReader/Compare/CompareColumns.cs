@@ -60,8 +60,42 @@ namespace DatabaseSchemaReader.Compare
                 }
 
                 //has column changed?
+                var sourceColumn = column.DbDataType;
+                var destColumn = match.DbDataType;
+                if (sourceColumn=="int4")
+                {
+                    sourceColumn = "integer";//pg SERIAL
+                }
+                else if (sourceColumn=="int8")
+                {
+                    sourceColumn = "bigint";//pg int8
+                }
+                if (string.Equals(sourceColumn,"int4", StringComparison.OrdinalIgnoreCase)||
+                    string.Equals(sourceColumn, "int8", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sourceColumn, "integer", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sourceColumn, "bigint", StringComparison.OrdinalIgnoreCase))
+                {
+                    column.Precision = null;
+                    column.Scale = null;
+                }
+                if (destColumn == "int4")
+                {
+                    destColumn = "integer";//pg int8
+                }
+                else if (destColumn == "int8")
+                {
+                    destColumn = "bigint";//pg int8
+                }
+                if (string.Equals(destColumn, "int4", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(destColumn, "int8", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(destColumn, "integer", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(destColumn, "bigint", StringComparison.OrdinalIgnoreCase))
+                {
+                    match.Precision = null;
+                    match.Scale = null;
+                }
 
-                if (string.Equals(column.DbDataType, match.DbDataType, StringComparison.OrdinalIgnoreCase) &&
+                if (string.Equals(sourceColumn, destColumn, StringComparison.OrdinalIgnoreCase) &&
                     column.Length == match.Length &&
                     column.Precision == match.Precision &&
                     column.Scale == match.Scale &&

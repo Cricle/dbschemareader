@@ -25,11 +25,18 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
 
         public override string AddConstraint(DatabaseTable databaseTable, DatabaseConstraint constraint)
         {
-            return null; //doesn't support it
+            DatabaseTable tempTable = databaseTable.Clone("bkup1904_" + databaseTable.Name);
+            tempTable.AddConstraint(constraint);
+            return BackupAndUpdateTable(databaseTable, tempTable);
         }
         public override string DropConstraint(DatabaseTable databaseTable, DatabaseConstraint constraint)
         {
-            return null; //doesn't support it
+            DatabaseTable tempTable = databaseTable.Clone("bkup1904_" + databaseTable.Name);
+            if (!tempTable.CheckConstraints.Remove(constraint))
+            {
+                tempTable.DefaultConstraints.Remove(constraint);
+            }
+            return BackupAndUpdateTable(databaseTable, tempTable);
         }
         public override string AddFunction(DatabaseFunction databaseFunction)
         {
@@ -159,7 +166,7 @@ ON {3}
             sb.AppendFormat("ALTER TABLE {0} RENAME TO {1};{2}", Escape(newTable.Name), Escape(databaseTable.Name), Environment.NewLine);
             return sb.ToString();
         }
-
+        
         public override string AlterColumn(DatabaseTable databaseTable, DatabaseColumn databaseColumn, DatabaseColumn originalColumn)
         {
             var tableGenerator = CreateTableGenerator(databaseTable);
