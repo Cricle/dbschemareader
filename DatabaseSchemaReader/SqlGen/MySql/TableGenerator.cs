@@ -85,7 +85,7 @@ namespace DatabaseSchemaReader.SqlGen.MySql
                 EscapeNames = EscapeNames
             };
 
-            sb.AppendLine(constraintWriter.WritePrimaryKey());
+            //sb.AppendLine(constraintWriter.WritePrimaryKey());
 
             sb.AppendLine(constraintWriter.WriteUniqueKeys());
             sb.AppendLine(constraintWriter.WriteCheckConstraints());
