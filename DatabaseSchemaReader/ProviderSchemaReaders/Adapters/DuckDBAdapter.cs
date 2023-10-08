@@ -38,5 +38,9 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Adapters
         {
             return new ViewColumns(CommandTimeout, viewName).Execute(ConnectionAdapter);
         }
+        public override IList<DatabaseFunction> Functions(string name)
+        {
+            return new Functions(CommandTimeout, Owner).Execute(ConnectionAdapter);
+        }
     }
 }
