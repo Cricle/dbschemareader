@@ -55,8 +55,15 @@ ORDER BY tbl_name, name";
                 var desc = field.Trim().EndsWith("DESC", StringComparison.OrdinalIgnoreCase);
                 var leftM = field.IndexOf('\"');
                 var rightM = field.IndexOf('\"',leftM+1);
-                var fieldName = field.Substring(leftM+1, rightM - leftM-1);
-                idxs.Add(new IndexDesc(desc, fieldName));
+                if (leftM == -1 || rightM == -1)
+                {
+                    idxs.Add(new IndexDesc(desc, field));
+                }
+                else
+                {
+                    var fieldName = field.Substring(leftM + 1, rightM - leftM - 1);
+                    idxs.Add(new IndexDesc(desc, fieldName));
+                }
             }
             return idxs;
         }

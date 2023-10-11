@@ -32,7 +32,16 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
                 {
                     var typeName = column.DataType.TypeName;
                     //an sqlite auto increment may be nullable
-                    return $"{typeName} PRIMARY KEY DEFAULT NEXTVAL('seq_{Table.Name}')";
+                    type= $"{typeName} PRIMARY KEY DEFAULT NEXTVAL('seq_{Table.Name}')";
+                    if (column.Nullable)
+                    {
+                        type += " NULL ";
+                    }
+                    else
+                    {
+                        type += " NOT NULL ";
+                    }
+                    return type;
                 }
             }
             //if there's a default value, and it's not a guid generator or autonumber
@@ -46,7 +55,14 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
                     value = value.Replace("(N'", "('");
                 type += " DEFAULT " + value;
             }
-
+            if (column.Nullable)
+            {
+                type += " NULL ";
+            }
+            else
+            {
+                type += " NOT NULL ";
+            }
             return type;
         }
 

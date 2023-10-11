@@ -9,7 +9,7 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
     class DuckDBMigrationGenerator : MigrationGenerator
     {
         public DuckDBMigrationGenerator()
-            : base( SqlType.DuckdDB)
+            : base( SqlType.DuckDB)
         {
         }
         protected override ISqlFormatProvider SqlFormatProvider()

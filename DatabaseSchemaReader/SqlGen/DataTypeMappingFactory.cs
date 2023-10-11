@@ -42,7 +42,7 @@ namespace DatabaseSchemaReader.SqlGen
                      return new PostgreSql.PostgreSqlDataTypeMapper();
                 case SqlType.Db2:
                      return new Db2.Db2DataTypeMapper();
-                case SqlType.DuckdDB:
+                case SqlType.DuckDB:
                     return new DuckDB.DuckDBDataTypeMapper();
                 default:
                     throw new ArgumentOutOfRangeException("sqlType");

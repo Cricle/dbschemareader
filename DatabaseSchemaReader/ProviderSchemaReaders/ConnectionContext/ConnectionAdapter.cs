@@ -31,7 +31,7 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.ConnectionContext
 
         private void CreateDbConnection()
         {
-#if !COREFX
+#if NET6_0_OR_GREATER
             System.Diagnostics.Trace.WriteLine($"Creating connection for {_parameters.ProviderName}");
             var factory = DatabaseSchemaReader.Utilities.DbProvider.FactoryTools.GetFactory(_parameters.ProviderName);
             _dbConnection = factory.CreateConnection();
@@ -43,6 +43,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.ConnectionContext
             {
                 throw new InvalidOperationException("Invalid connection string " + _parameters.ConnectionString, argumentException);
             }
+#else
+            throw new NotSupportedException();
 #endif
         }
 

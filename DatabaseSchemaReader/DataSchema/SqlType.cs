@@ -41,6 +41,6 @@ namespace DatabaseSchemaReader.DataSchema
         /// <summary>
         /// The duck db
         /// </summary>
-        DuckdDB
+        DuckDB
     }
 }

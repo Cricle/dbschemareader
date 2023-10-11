@@ -31,8 +31,11 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
             _mapping.Add(DbType.Double, "DOUBLE");
             _mapping.Add(DbType.Guid, "UUID");
             _mapping.Add(DbType.Int16, "SMALLINT");
+            _mapping.Add(DbType.UInt16, "USMALLINT");
             _mapping.Add(DbType.Int32, "INTEGER");
+            _mapping.Add(DbType.UInt32, "UINTEGER");
             _mapping.Add(DbType.Int64, "BIGINT");
+            _mapping.Add(DbType.UInt64, "UBIGINT");
             _mapping.Add(DbType.Single, "REAL");
             _mapping.Add(DbType.StringFixedLength, "VARCHAR");
             _mapping.Add(DbType.String, "VARCHAR");
