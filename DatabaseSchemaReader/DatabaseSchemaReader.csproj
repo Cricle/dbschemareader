@@ -6,7 +6,7 @@
 			The main warehouse is https://github.com/Cricle/dbschemareader .
 		</Description>
 		<AssemblyTitle>DatabaseSchemaReader</AssemblyTitle>
-		<VersionPrefix>2.7.27</VersionPrefix>
+		<VersionPrefix>2.7.28</VersionPrefix>
 		<Authors>HCricle</Authors>
 		<TargetFrameworks>netstandard2.0;netstandard1.5;net6.0</TargetFrameworks>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -41,7 +41,7 @@
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-		<Version>2.7.27</Version>
+		<Version>2.7.28</Version>
 		<Configurations>Debug;Release;net45;Net4</Configurations>
 	</PropertyGroup>
 
