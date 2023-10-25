@@ -9,6 +9,11 @@ namespace DatabaseSchemaReader.SqlGen.SqlServerCe
     {
         private readonly IDictionary<DbType, string> _mapping = new Dictionary<DbType, string>();
 
+        public SqlServerCeDataTypeMapper()
+        {
+            Init();
+        }
+
         public override IList<DataType> DataTypes { get; }= new DataTypeList().Execute();
 
         private void Init()

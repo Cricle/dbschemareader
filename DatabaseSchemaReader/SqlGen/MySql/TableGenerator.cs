@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DatabaseSchemaReader.DataSchema;
@@ -43,9 +44,7 @@ namespace DatabaseSchemaReader.SqlGen.MySql
             }
 
             //MySql auto-increments MUST BE primary key
-            if (column.IsAutoNumber) type += " AUTO_INCREMENT PRIMARY KEY";
-            else if (column.IsPrimaryKey && Table.PrimaryKey.Columns.Count == 1)
-                type += " PRIMARY KEY";
+            if (column.IsAutoNumber) type += " AUTO_INCREMENT";
 
             return type;
         }
@@ -73,7 +72,13 @@ namespace DatabaseSchemaReader.SqlGen.MySql
         {
             return string.Empty;
         }
-
+        protected override void AddTableConstraints(IList<string> columnList)
+        {
+            if (Table.PrimaryKey != null && Table.PrimaryKey.Columns.Count != 0)
+            {
+                columnList.Add($"PRIMARY KEY ({string.Join(",", Table.PrimaryKey.Columns.Select(x => $"`{x}`"))})");
+            }
+        }
         protected override string ConstraintWriter()
         {
             var sb = new StringBuilder();
@@ -84,8 +89,6 @@ namespace DatabaseSchemaReader.SqlGen.MySql
                 TranslateCheckConstraint = TranslateCheckExpression,
                 EscapeNames = EscapeNames
             };
-
-            //sb.AppendLine(constraintWriter.WritePrimaryKey());
 
             sb.AppendLine(constraintWriter.WriteUniqueKeys());
             sb.AppendLine(constraintWriter.WriteCheckConstraints());

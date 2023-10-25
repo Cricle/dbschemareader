@@ -29,9 +29,7 @@ namespace DatabaseSchemaReader
         /// <param name="sqlType">Type of the SQL.</param>
         public SqlWriter(DatabaseTable table, SqlType sqlType)
         {
-            if (table == null)
-                throw new ArgumentNullException("table");
-            _table = table;
+            _table = table ?? throw new ArgumentNullException("table");
             _sqlType = sqlType;
             _nameEscapeStart = null;
             _nameEscapeEnd = null;
@@ -53,6 +51,7 @@ namespace DatabaseSchemaReader
                     _nameEscapeStart = "\"";
                     _nameEscapeEnd = "\"";
                     break;
+                case SqlType.DuckDB:
                 case SqlType.PostgreSql:
                     _parameterPrefix = ':';
                     _nameEscapeStart = "\"";
@@ -174,7 +173,7 @@ namespace DatabaseSchemaReader
             string joinString = _nameEscapeEnd + "," + Environment.NewLine + "  " + _nameEscapeStart;
 
             string sql = "  " + _nameEscapeStart
-                    + String.Join(joinString, cols)
+                    + string.Join(joinString, cols)
                     + _nameEscapeEnd;
             return sql;
         }
@@ -295,8 +294,10 @@ namespace DatabaseSchemaReader
                 else
                 {
                     //no pk constraint, assume first column
-                    var result = new List<string>();
-                    result.Add(_table.Columns[0].Name);
+                    var result = new List<string>(1)
+                    {
+                        _table.Columns[0].Name
+                    };
                     _primaryKeys = result;
                 }
                 return _primaryKeys;
@@ -388,7 +389,7 @@ namespace DatabaseSchemaReader
                 sb.AppendLine("   rowNumber > (" + ParameterName("pageSize") + " * (" + ParameterName("currentPage") + " - 1))");
                 sb.AppendLine("   AND rowNumber <= (" + ParameterName("pageSize") + " * " + ParameterName("currentPage") + ")");
             }
-            else if (_sqlType == SqlType.PostgreSql)
+            else if (_sqlType == SqlType.PostgreSql||_sqlType== SqlType.DuckDB)
             {
                 sb.AppendLine(EscapedTableName);
                 sb.AppendLine("  ORDER BY  " + orderBy);
@@ -475,7 +476,7 @@ namespace DatabaseSchemaReader
                 sb.AppendLine("   rowNumber >= " + ParameterName("startRow"));
                 sb.AppendLine("   AND rowNumber <= " + ParameterName("endRow"));
             }
-            else if (_sqlType == SqlType.PostgreSql)
+            else if (_sqlType == SqlType.PostgreSql || _sqlType == SqlType.DuckDB)
             {
                 sb.AppendLine(EscapedTableName);
                 sb.AppendLine("  ORDER BY  " + orderBy);
@@ -686,11 +687,11 @@ FETCH NEXT @EndingRowNumber - @StartingRowNumber + 1 ROWS ONLY
                         sb.Append("SELECT LAST_INSERT_ID();");
                     }
                 }
-                else if (_sqlType == SqlType.PostgreSql)
+                else if (_sqlType == SqlType.PostgreSql || _sqlType == SqlType.DuckDB)
                 {
                     sb.AppendLine(";");
                     //default sequence name is tablename_colname_seq
-                    var seq = _table.Name + "_" + ((_table.PrimaryKeyColumn != null) ? _table.PrimaryKeyColumn.Name : null) + "_seq";
+                    var seq = _table.Name + "_" + (_table.PrimaryKeyColumn?.Name) + "_seq";
                     sb.Append("SELECT currval('" + seq + "');");
                 }
                 else if (_sqlType == SqlType.SQLite)
