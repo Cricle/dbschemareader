@@ -181,15 +181,25 @@ namespace DatabaseSchemaReader
         /// Gets all of the schema in one call.
         /// </summary>
         /// <returns></returns>
+        /// <param name="readTypes">Read types for read</param>
+        public DatabaseSchema ReadAll(ReadTypes readTypes)
+        {
+            return ReadAll(readTypes,CancellationToken.None);
+        }
+        /// <summary>
+        /// Gets all of the schema in one call.
+        /// </summary>
+        /// <returns></returns>
         public DatabaseSchema ReadAll()
         {
-            return ReadAll(CancellationToken.None);
+            return ReadAll(ReadTypes.All);
         }
 
         /// <summary>
         /// Gets all of the schema in one call.
         /// </summary>
-        public DatabaseSchema ReadAll(CancellationToken ct)
+        /// <param name="readTypes">Read types for read</param>
+        public DatabaseSchema ReadAll(ReadTypes readTypes,CancellationToken ct)
         {
             _fixUp = false;
             using (_readerAdapter.CreateConnection())
@@ -204,7 +214,7 @@ namespace DatabaseSchemaReader
                 AllSchemas();
 
                 if (ct.IsCancellationRequested) return _db;
-                AllTables(ct);
+                AllTables(readTypes,ct);
 
                 if (ct.IsCancellationRequested) return _db;
                 AllViews(ct);
@@ -303,19 +313,27 @@ namespace DatabaseSchemaReader
 
             return DatabaseSchema.Tables;
         }
-
         /// <summary>
         /// Gets all tables (plus constraints, indexes and triggers).
         /// </summary>
         public IList<DatabaseTable> AllTables()
         {
-            return AllTables(CancellationToken.None);
+            return AllTables( ReadTypes.All);
+        }
+        /// <summary>
+        /// Gets all tables (plus constraints, indexes and triggers).
+        /// </summary>
+        /// <param name="readTypes">Read types for read</param>
+        public IList<DatabaseTable> AllTables(ReadTypes readTypes)
+        {
+            return AllTables(readTypes,CancellationToken.None);
         }
 
         /// <summary>
         /// Gets all tables (plus constraints, indexes and triggers).
         /// </summary>
-        public IList<DatabaseTable> AllTables(CancellationToken ct)
+        /// <param name="readTypes">Read types for read</param>
+        public IList<DatabaseTable> AllTables(ReadTypes readTypes,CancellationToken ct)
         {
             if (ct.IsCancellationRequested) return new List<DatabaseTable>();
             RaiseReadingProgress(SchemaObjectType.Tables);
@@ -323,7 +341,7 @@ namespace DatabaseSchemaReader
             IList<DatabaseTable> tables;
             using (_readerAdapter.CreateConnection())
             {
-                var builder = new TableBuilder(_readerAdapter);
+                var builder = new TableBuilder(_readerAdapter, readTypes);
                 tables = builder.Execute(ct);
             }
             if (ct.IsCancellationRequested) return tables;
@@ -414,24 +432,34 @@ namespace DatabaseSchemaReader
         /// Gets the table. If <see cref="Owner"/> is specified, it is used.
         /// </summary>
         /// <param name="tableName">Name of the table. Oracle names can be case sensitive.</param>
+        /// <param name="readTypes">Read types for read</param>
+        public DatabaseTable Table(string tableName, ReadTypes readTypes)
+        {
+            return Table(tableName, readTypes, CancellationToken.None);
+        }
+        /// <summary>
+        /// Gets the table. If <see cref="Owner"/> is specified, it is used.
+        /// </summary>
+        /// <param name="tableName">Name of the table. Oracle names can be case sensitive.</param>
         public DatabaseTable Table(string tableName)
         {
-            return Table(tableName, CancellationToken.None);
+            return Table(tableName,  ReadTypes.All);
         }
 
         /// <summary>
         /// Gets the table. If <see cref="Owner" /> is specified, it is used.
         /// </summary>
         /// <param name="tableName">Name of the table. Oracle names can be case sensitive.</param>
+        /// <param name="readTypes">Read types for read</param>
         /// <param name="ct">The ct.</param>
-        public DatabaseTable Table(string tableName, CancellationToken ct)
+        public DatabaseTable Table(string tableName,ReadTypes readTypes, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(tableName)) throw new ArgumentNullException("tableName");
 
             DatabaseTable table;
             using (_readerAdapter.CreateConnection())
             {
-                var builder = new TableBuilder(_readerAdapter);
+                var builder = new TableBuilder(_readerAdapter,readTypes);
                 var handler = ReaderProgress;
                 if (handler != null) builder.ReaderProgress += RaiseReadingProgress;
                 table = builder.Execute(ct, tableName);

@@ -677,7 +677,7 @@ namespace DatabaseSchemaReader.SqlGen
                     }
                     else
                     {
-                        escapedColumnNames.Add($"{Escape(enuColumn.Current)} {(enuDesc.Current ? "ASC" : "DESC")}");
+                        escapedColumnNames.Add($"{Escape(enuColumn.Current)} {(enuDesc.Current ?  "DESC": "ASC")}");
                     }
                 }
             }

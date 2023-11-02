@@ -15,9 +15,12 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
 
         public event EventHandler<ReaderEventArgs> ReaderProgress;
 
-        public TableBuilder(ReaderAdapter readerAdapter)
+        public ReadTypes ReadType { get; }
+
+        public TableBuilder(ReaderAdapter readerAdapter, ReadTypes readType)
         {
             _readerAdapter = readerAdapter;
+            ReadType = readType;
         }
 
         protected void RaiseReadingProgress(SchemaObjectType schemaObjectType)
@@ -56,28 +59,86 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Builders
                 Trace.WriteLine("Using first schema " + owner);
                 _readerAdapter.Parameters.Owner = owner;
             }
-            var columns = _readerAdapter.Columns(tableName);
-            var identityColumns = _readerAdapter.IdentityColumns(tableName);
-            var checkConstraints = _readerAdapter.CheckConstraints(tableName);
-            var pks = _readerAdapter.PrimaryKeys(tableName);
-            var uks = _readerAdapter.UniqueKeys(tableName);
-            var fks = _readerAdapter.ForeignKeys(tableName);
-            var dfs = _readerAdapter.DefaultConstraints(tableName);
-            var triggers = _readerAdapter.Triggers(tableName);
-            var tableDescs = _readerAdapter.TableDescriptions(tableName);
-            var colDescs = _readerAdapter.ColumnDescriptions(tableName);
-            var computed = _readerAdapter.ComputedColumns(tableName);
-
-            var indexes = MergeIndexColumns(_readerAdapter.Indexes(tableName), _readerAdapter.IndexColumns(tableName));
+            IList<DatabaseColumn> columns=Array.Empty<DatabaseColumn>();
+            if (ReadType.HasFlag(ReadTypes.Columns) ||
+                ReadType.HasFlag(ReadTypes.IdentityColumns) || 
+                ReadType.HasFlag(ReadTypes.Computed)||
+                ReadType.HasFlag(ReadTypes.Indexs))
+            {
+                columns = _readerAdapter.Columns(tableName);
+            }
+            IList<DatabaseColumn> identityColumns = Array.Empty<DatabaseColumn>();
+            if (ReadType.HasFlag(ReadTypes.IdentityColumns))
+            {
+                identityColumns = _readerAdapter.IdentityColumns(tableName);
+            }
+            IList<DatabaseConstraint> checkConstraints = Array.Empty<DatabaseConstraint>();
+            if (ReadType.HasFlag(ReadTypes.IdentityColumns))
+            {
+                checkConstraints = _readerAdapter.CheckConstraints(tableName);
+            }
+            IList<DatabaseConstraint> pks = Array.Empty<DatabaseConstraint>();
+            if (ReadType.HasFlag(ReadTypes.Pks))
+            {
+                pks = _readerAdapter.PrimaryKeys(tableName);
+            }
+            IList<DatabaseConstraint> uks = Array.Empty<DatabaseConstraint>();
+            if (ReadType.HasFlag(ReadTypes.Uks))
+            {
+                uks = _readerAdapter.UniqueKeys(tableName);
+            }
+            IList<DatabaseConstraint> fks = Array.Empty<DatabaseConstraint>();
+            if (ReadType.HasFlag(ReadTypes.Fks))
+            {
+                fks = _readerAdapter.ForeignKeys(tableName);
+            }
+            IList<DatabaseConstraint> dfs = Array.Empty<DatabaseConstraint>();
+            if (ReadType.HasFlag(ReadTypes.Fks))
+            {
+                dfs = _readerAdapter.DefaultConstraints(tableName);
+            }
+            IList<DatabaseTrigger> triggers = Array.Empty<DatabaseTrigger>();
+            if (ReadType.HasFlag(ReadTypes.Triggers))
+            {
+                triggers = _readerAdapter.Triggers(tableName);
+            }
+            IList<DatabaseTable> tableDescs = Array.Empty<DatabaseTable>();
+            if (ReadType.HasFlag(ReadTypes.TableDescs))
+            {
+                tableDescs = _readerAdapter.TableDescriptions(tableName);
+            }
+            IList<DatabaseTable> colDescs = Array.Empty<DatabaseTable>();
+            if (ReadType.HasFlag(ReadTypes.TableDescs))
+            {
+                colDescs = _readerAdapter.ColumnDescriptions(tableName);
+            }
+            IList<DatabaseColumn> computed = Array.Empty<DatabaseColumn>();
+            if (ReadType.HasFlag(ReadTypes.TableDescs))
+            {
+                computed = _readerAdapter.ComputedColumns(tableName);
+            }
+            IList<DatabaseIndex> indexes = Array.Empty<DatabaseIndex>();
+            if (ReadType.HasFlag(ReadTypes.Indexs))
+            {
+                indexes = MergeIndexColumns(_readerAdapter.Indexes(tableName), _readerAdapter.IndexColumns(tableName));
+            }
 
             FillOutForeignKey(fks, indexes);
-            if (columns.Count == 0) return null;
-
             var table = new DatabaseTable
             {
                 SchemaOwner = _readerAdapter.Parameters.Owner,
                 Name = tableName
             };
+            if (columns.Count == 0)
+            {
+                if (ReadType.HasFlag( ReadTypes.Triggers))
+                {
+                    UpdateTriggers(table, triggers);
+                    return table;
+                }
+                return null;
+            }
+
             table.Columns.AddRange(columns);
             UpdateCheckConstraints(table, checkConstraints);
             UpdateIdentities(table.Columns, identityColumns);
