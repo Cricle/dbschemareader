@@ -26,7 +26,8 @@ namespace DatabaseSchemaReader.ProviderSchemaReaders.Databases.PostgreSql
   character_maximum_length,
   numeric_precision,
   numeric_scale,
-  datetime_precision
+  datetime_precision,
+  column_default
 FROM information_schema.columns
 WHERE (table_name = :TABLENAME OR :TABLENAME IS NULL) AND
 table_schema='public'
@@ -54,6 +55,7 @@ ORDER BY table_schema, table_name, ordinal_position";
             var precision = record["numeric_precision"]?.ToString();
             var scale = record["numeric_scale"]?.ToString();
             var type = record.GetString("data_type");
+            var columnDefault = record.GetString("column_default");
             if (!string.IsNullOrEmpty(len))
             {
                 type += $"({len})";
@@ -75,8 +77,12 @@ ORDER BY table_schema, table_name, ordinal_position";
                 Nullable = record.GetBoolean("is_nullable"),
                 DefaultValue = record.GetString("column_default"),
                 DateTimePrecision = record.GetNullableInt("datetime_precision"),
+                IsAutoNumber= !string.IsNullOrEmpty(columnDefault)&& columnDefault.StartsWith("nextval(", StringComparison.OrdinalIgnoreCase)
             };
-
+            if (table.IsAutoNumber)
+            {
+                table.IdentityDefinition = new DatabaseColumnIdentity { };
+            }
             Result.Add(table);
         }
     }

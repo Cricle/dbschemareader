@@ -15,7 +15,6 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
         }
         public override string Write()
         {
-            var str = string.Empty;
             if (Table.HasAutoNumberColumn)
             {
                 return $"CREATE SEQUENCE IF NOT EXISTS 'seq_{Table.Name}';\n"+ base.Write();
@@ -49,7 +48,7 @@ namespace DatabaseSchemaReader.SqlGen.DuckDB
                 !SqlTranslator.IsGuidGenerator(column.DefaultValue) &&
                 !column.IsAutoNumber)
             {
-                var value = SqlTranslator.Fix(column.DefaultValue);
+                var value = SqlTranslator.Fix(column.DefaultValue.Replace("::regclass)",")"));
                 //SqlServer (N'string') format
                 if (value.StartsWith("(N'", StringComparison.OrdinalIgnoreCase))
                     value = value.Replace("(N'", "('");
