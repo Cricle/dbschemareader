@@ -30,7 +30,8 @@ namespace DatabaseSchemaReader.Compare
             ICollection<DatabaseConstraint> firstConstraints,
             ICollection<DatabaseConstraint> secondConstraints)
         {
-            foreach (var constraint in firstConstraints)
+            var copyFirstConstraints = firstConstraints.ToList();
+            foreach (var constraint in copyFirstConstraints)
             {
                 var constraintName = constraint.Name;
                 var matchConstraint = secondConstraints.FirstOrDefault(c => c.Name == constraintName);

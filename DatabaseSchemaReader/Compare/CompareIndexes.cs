@@ -19,8 +19,9 @@ namespace DatabaseSchemaReader.Compare
         public void Execute(DatabaseTable databaseTable, DatabaseTable compareTable)
         {
             var firstIndexes = databaseTable.Indexes;
+            var copyFirstIndexes = firstIndexes.ToList();
             var secondIndexes = compareTable.Indexes;
-            foreach (var index in firstIndexes)
+            foreach (var index in copyFirstIndexes)
             {
                 if (index.IsUniqueKeyIndex(databaseTable)) continue;
 
@@ -36,8 +37,7 @@ namespace DatabaseSchemaReader.Compare
                     || index.IsUnique != match.IsUnique || !string.Equals(index.Filter, match.Filter))
                 {
                     CreateResult(ResultType.Change, databaseTable, indexName,
-                       _writer.DropIndex(databaseTable, index) + Environment.NewLine +
-                       _writer.AddIndex(databaseTable, match));
+                       _writer.DropIndex(databaseTable, index));
                 }
             }
 

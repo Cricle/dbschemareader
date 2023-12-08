@@ -94,20 +94,19 @@ namespace DatabaseSchemaReader.Compare
                     match.Precision = null;
                     match.Scale = null;
                 }
-
-                if (string.Equals(sourceColumn, destColumn, StringComparison.OrdinalIgnoreCase) &&
-                    column.Length == match.Length &&
-                    column.Precision == match.Precision &&
-                    column.Scale == match.Scale &&
-                    column.Nullable == match.Nullable)
+                if (string.Equals(sourceColumn, destColumn, StringComparison.OrdinalIgnoreCase) && column.Nullable == match.Nullable)
                 {
-                    if (column.Id == null || match.Id == null ||
-                        column.Id != match.Id)
+                    if ((!column.DataType.IsString || column.Length == match.Length) &&
+                        (column.DataType.NetDataType != typeof(decimal).FullName || (column.Precision == match.Precision && column.Scale == match.Scale)))
                     {
-                        if (column.Name == match.Name)
+                        if (column.Id == null || match.Id == null ||
+                            column.Id != match.Id)
                         {
-                            //we don't check IDENTITY
-                            continue; //the same, no action
+                            if (column.Name == match.Name)
+                            {
+                                //we don't check IDENTITY
+                                continue; //the same, no action
+                            }
                         }
                     }
                 }
