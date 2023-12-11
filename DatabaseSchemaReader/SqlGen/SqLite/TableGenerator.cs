@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using DatabaseSchemaReader.DataSchema;
 
 namespace DatabaseSchemaReader.SqlGen.SqLite
@@ -17,6 +18,7 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
 
         protected override ISqlFormatProvider SqlFormatProvider()
         {
+            
             return new SqlFormatProvider();
         }
 
@@ -114,7 +116,41 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
 
         protected override string ConstraintWriter()
         {
-            return string.Empty;
+            var formatter = SqlFormatProvider();
+            var s = new StringBuilder();
+            var createdIndexs = new HashSet<string>();
+            foreach (var item in Table.UniqueKeys)
+            {
+                if (createdIndexs.Add(item.Name))
+                {
+                    s.AppendFormat("CREATE UNIQUE INDEX {0} ON {1}({2});",
+                        formatter.Escape(item.Name),
+                        formatter.Escape(item.TableName),
+                        string.Join(",", item.Columns.Select(x=>formatter.Escape(x))));
+                    s.AppendLine();
+                }
+            }
+            foreach (var item in Table.Indexes)
+            {
+                if (createdIndexs.Add(item.Name))
+                {
+                    s.AppendFormat("CREATE INDEX {0} ON {1}({2});",
+                        formatter.Escape(item.Name),
+                        formatter.Escape(item.TableName),
+                        string.Join(",", item.Columns.Select((x, i) => 
+                        {
+                            var isDesc = item.ColumnOrderDescs.Count > i && item.ColumnOrderDescs[i];
+                            var name = formatter.Escape(x.Name);
+                            if (isDesc)
+                            {
+                                name += " DESC";
+                            }
+                            return name;
+                        })));
+                    s.AppendLine();
+                }
+            }
+            return s.ToString();
         }
 
         #endregion
