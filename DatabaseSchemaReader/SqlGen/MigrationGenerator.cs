@@ -479,7 +479,8 @@ namespace DatabaseSchemaReader.SqlGen
             if (databaseColumn.IsIndexed)
             {
                 var dropeds = new HashSet<DatabaseIndex>();
-                foreach (var index in databaseTable.Indexes)
+                var idxs = databaseTable.Indexes.ToList();
+                foreach (var index in idxs)
                 {
                     if (!index.Columns.Any(c => string.Equals(c.Name, databaseColumn.Name))) continue;
                     sb.AppendLine(DropIndex(databaseTable, index));
@@ -508,7 +509,8 @@ namespace DatabaseSchemaReader.SqlGen
             if (databaseColumn.IsForeignKey)
             {
                 var dropeds = new HashSet<DatabaseConstraint>();
-                foreach (var foreignKey in databaseTable.ForeignKeys)
+                var fks = databaseTable.ForeignKeys.ToList();
+                foreach (var foreignKey in fks)
                 {
                     if (!foreignKey.Columns.Contains(databaseColumn.Name)) continue;
 
@@ -533,7 +535,8 @@ namespace DatabaseSchemaReader.SqlGen
             if (databaseColumn.IsUniqueKey)
             {
                 var dropeds = new HashSet<DatabaseConstraint>();
-                foreach (var uniqueKey in databaseTable.UniqueKeys)
+                var uks = databaseTable.UniqueKeys.ToList();
+                foreach (var uniqueKey in uks)
                 {
                     if (!uniqueKey.Columns.Contains(databaseColumn.Name)) continue;
                     sb.AppendLine(string.Format(CultureInfo.InvariantCulture,
