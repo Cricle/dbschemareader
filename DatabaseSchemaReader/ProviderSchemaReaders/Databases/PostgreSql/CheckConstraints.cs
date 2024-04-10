@@ -26,7 +26,7 @@ INNER JOIN INFORMATION_SCHEMA.CHECK_CONSTRAINTS AS cons2
   cons2.constraint_name = cons.constraint_name
 WHERE 
     (cons.table_name = :tableName OR :tableName IS NULL) AND 
-     cons.constraint_type = 'CHECK'
+     cons.constraint_type = 'CHECK' AND cons2.check_clause NOT LIKE '%NOT NULL'
 ORDER BY cons.table_name, cons.constraint_name";
 
         }

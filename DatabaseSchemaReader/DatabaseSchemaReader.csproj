@@ -45,6 +45,9 @@
 		<Configurations>Debug;Release;net45;Net4</Configurations>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(PublishAot)'!=''">
+		<TargetFrameworks>net8.0</TargetFrameworks>
+	</PropertyGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
 		<PackageReference Include="System.Console" Version="4.0.0" />
 		<PackageReference Include="System.Data.Common" Version="4.1.0" />
@@ -78,7 +81,7 @@
 		<DefineConstants>TRACE;DEBUG;NET4</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' Or '$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net6.0' ">
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' Or '$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net6.0'  Or '$(TargetFramework)' == 'net8.0' ">
 		<DefineConstants>TRACE;DEBUG;COREFX;NETSTANDARD2_0;</DefineConstants>
 	</PropertyGroup>
 
@@ -89,7 +92,7 @@
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0'">
 		<Compile Remove="DbSchemaReader\**\*.cs;ProviderSchemaReaders\DbProviders\**\*.cs;Conversion\**\*.cs;Utilities\DbProvider\**\*.cs" />
 	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0'  ">
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net8.0'  ">
 		<Compile Remove="DbSchemaReader\**\*.cs;ProviderSchemaReaders\DbProviders\**\*.cs;Conversion\**\*.cs" />
 	</ItemGroup>
 
