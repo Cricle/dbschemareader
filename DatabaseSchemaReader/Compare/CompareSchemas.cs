@@ -19,6 +19,8 @@ namespace DatabaseSchemaReader.Compare
         private readonly DatabaseSchema _baseSchema;
         private readonly DatabaseSchema _compareSchema;
 
+        public bool EnableDefaultCompare { get; set; }
+
         /// <summary>
         /// Create from table comapre with table <paramref name="baseTable"/> and <paramref name="compareTable"/>
         /// </summary>
@@ -88,6 +90,7 @@ namespace DatabaseSchemaReader.Compare
             var list = new List<CompareResult>();
 
             var compareTables = new CompareTables(list, _writer);
+            compareTables.EnableDefaultCompare = EnableDefaultCompare;
             //make sure they are in topological order- if 2 tables are added, the first must not have a foreign key to the second...
             var comparedTables = SchemaTablesSorter.TopologicalSort(_compareSchema);
             compareTables.Execute(_baseSchema.Tables, comparedTables);

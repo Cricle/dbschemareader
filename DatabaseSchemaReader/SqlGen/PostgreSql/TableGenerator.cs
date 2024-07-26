@@ -181,7 +181,7 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
                 {
                     return defaultConstraint + defaultValue;
                 }
-                return defaultConstraint + "'" + defaultValue.Trim('\'') + "'";
+                return defaultConstraint + defaultValue.Trim('\'') ;
             }
 
             if (IsBooleanColumn(column))

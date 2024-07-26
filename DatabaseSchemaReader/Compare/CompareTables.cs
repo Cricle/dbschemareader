@@ -10,6 +10,8 @@ namespace DatabaseSchemaReader.Compare
         private readonly IList<CompareResult> _results;
         private readonly ComparisonWriter _writer;
 
+        public bool EnableDefaultCompare { get; set; }
+
         public CompareTables(IList<CompareResult> results, ComparisonWriter writer)
         {
             _results = results;
@@ -49,6 +51,7 @@ namespace DatabaseSchemaReader.Compare
 
                 //add, alter and delete columns
                 var compareColumns = new CompareColumns(_results, _writer);
+                compareColumns.EnableDefaultCompare = EnableDefaultCompare;
                 compareColumns.Execute(databaseTable, match);
 
                 //add, alter and delete constraints

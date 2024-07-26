@@ -64,24 +64,24 @@ namespace DatabaseSchemaReader.SqlGen
         {
             var tableGenerator = CreateTableGenerator(databaseTable);
             var addColumn = tableGenerator.WriteColumn(databaseColumn).Trim();
-            if (string.IsNullOrEmpty(databaseColumn.DefaultValue) && !databaseColumn.Nullable)
-            {
-                var dt = databaseColumn.DataType;
-                if (dt == null || dt.IsString)
-                {
-                    addColumn += " DEFAULT ''"; //empty string
-                }
-                else if (dt.IsNumeric)
-                {
-                    addColumn += " DEFAULT 0";
-                }
-                else if (dt.IsDateTime)
-                {
-                    addColumn += " DEFAULT CURRENT_TIMESTAMP";
-                }
-                //make sure the NOT NULL is AFTER the default
-                addColumn = addColumn.Replace(" NOT NULL ", " ") + " NOT NULL";
-            }
+            //if (string.IsNullOrEmpty(databaseColumn.DefaultValue) && !databaseColumn.Nullable)
+            //{
+            //    var dt = databaseColumn.DataType;
+            //    if (dt == null || dt.IsString)
+            //    {
+            //        addColumn += " DEFAULT ''"; //empty string
+            //    }
+            //    else if (dt.IsNumeric)
+            //    {
+            //        addColumn += " DEFAULT 0";
+            //    }
+            //    else if (dt.IsDateTime)
+            //    {
+            //        addColumn += " DEFAULT CURRENT_TIMESTAMP";
+            //    }
+            //    //make sure the NOT NULL is AFTER the default
+            //    addColumn = addColumn.Replace(" NOT NULL ", " ") + " NOT NULL";
+            //}
             return string.Format(CultureInfo.InvariantCulture,
                 "ALTER TABLE {0} ADD {1}",
                 TableName(databaseTable),

@@ -11,6 +11,8 @@ namespace DatabaseSchemaReader.Compare
         private readonly IList<CompareResult> _results;
         private readonly ComparisonWriter _writer;
 
+        public bool EnableDefaultCompare { get; set; }
+
         public CompareColumns(IList<CompareResult> results, ComparisonWriter writer)
         {
             _results = results;
@@ -93,6 +95,14 @@ namespace DatabaseSchemaReader.Compare
                 {
                     match.Precision = null;
                     match.Scale = null;
+                }
+                if (EnableDefaultCompare)
+                {
+                    if (column.DefaultValue != match.DefaultValue)
+                    {
+                        toAlter.Add(name, new[] { match, column });
+                        continue;
+                    }
                 }
                 if (string.Equals(sourceColumn, destColumn, StringComparison.OrdinalIgnoreCase) && column.Nullable == match.Nullable)
                 {

@@ -33,14 +33,7 @@ namespace DatabaseSchemaReader.SqlGen.MySql
                 defaultValue = FixDefaultValue(defaultValue);
                 const string defaultConstraint = " DEFAULT ";
 
-                if (IsStringColumn(column))
-                {
-                    type += defaultConstraint + "'" + defaultValue + "'";
-                }
-                else //numeric default
-                {
-                    type += defaultConstraint + defaultValue;
-                }
+                type += defaultConstraint + "(" + defaultValue + ")";
             }
 
             //MySql auto-increments MUST BE primary key
