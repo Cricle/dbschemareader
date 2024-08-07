@@ -50,6 +50,10 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
 
         protected override string WriteDefaultConstraint(DatabaseConstraint constraint)
         {
+            if (string.IsNullOrEmpty(constraint.Expression))
+            {
+                return string.Empty;
+            }
             var column = EscapeName(constraint.Columns.FirstOrDefault());
             return string.Format(CultureInfo.InvariantCulture,
                                  @"ALTER TABLE {0} ADD CONSTRAINT {1} DEFAULT {2} FOR {3}",

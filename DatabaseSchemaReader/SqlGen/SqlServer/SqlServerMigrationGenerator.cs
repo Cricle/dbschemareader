@@ -38,7 +38,7 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
             }
             //we could check if any of the properties are changed here
             sb.AppendLine(base.AlterColumn(databaseTable, databaseColumn, originalColumn));
-            if (databaseColumn.DefaultValue != null)
+            if (!string.IsNullOrEmpty(databaseColumn.DefaultValue))
             {
                 //add default contraint
                 sb.AppendLine("ALTER TABLE " + TableName(databaseTable) +
