@@ -98,7 +98,7 @@ namespace DatabaseSchemaReader.Compare
                 }
                 if (EnableDefaultCompare)
                 {
-                    if (column.DefaultValue != match.DefaultValue)
+                    if (column.DefaultValue != match.DefaultValue?.Trim('\''))
                     {
                         toAlter.Add(name, new[] { match, column });
                         continue;

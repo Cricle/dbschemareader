@@ -92,7 +92,7 @@ where
         private static void AddColumnDefault(IDataRecord row, string defaultKey, DatabaseColumn column)
         {
             if (string.IsNullOrEmpty(defaultKey)) return;
-            string d = row[defaultKey].ToString();
+            string d = row[defaultKey].ToString().TrimStart('(').TrimEnd(')');
             if (!string.IsNullOrEmpty(d)) column.DefaultValue = d.Trim(new[] { ' ', '\'', '=' });
         }
     }

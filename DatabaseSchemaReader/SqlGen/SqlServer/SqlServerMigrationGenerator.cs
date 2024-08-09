@@ -9,19 +9,19 @@ namespace DatabaseSchemaReader.SqlGen.SqlServer
     {
         public SqlServerMigrationGenerator()
             : base(SqlType.SqlServer)
-        {
+        {            
         }
 
         protected override string AlterColumnFormat
         {
             get { return "ALTER TABLE {0} ALTER COLUMN {1};"; }
         }
-        protected override bool AlterColumnIncludeDefaultValue { get { return false; } }
+        protected override bool AlterColumnIncludeDefaultValue { get { return true; } }
 
         public override string AlterColumn(DatabaseTable databaseTable, DatabaseColumn databaseColumn, DatabaseColumn originalColumn)
         {
             var sb = new StringBuilder();
-            var defaultName = "DF_" + databaseTable.Name + "_" + databaseColumn.Name;
+            var defaultName = "DF_" + databaseTable.Name.Replace("-","_") + "_" + databaseColumn.Name.Replace("-", "_");
             if (originalColumn != null)
             {
                 if (originalColumn.DefaultValue != null)

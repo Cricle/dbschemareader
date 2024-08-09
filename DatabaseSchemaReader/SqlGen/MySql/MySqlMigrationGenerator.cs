@@ -123,7 +123,10 @@ namespace DatabaseSchemaReader.SqlGen.MySql
                 return RenameColumn(databaseTable, databaseColumn, originalColumnName);
             //MySql has to restate the column definition even if it's unchanged. Yuck, but we have the data.
             var tableGenerator = CreateTableGenerator(databaseTable);
+            var defaultValue = databaseColumn.DefaultValue;
+            databaseColumn.DefaultValue = null;
             var columnDefinition = tableGenerator.WriteColumn(databaseColumn).Trim();
+            databaseColumn.DefaultValue = defaultValue;
             return string.Format(CultureInfo.InvariantCulture,
                 "ALTER TABLE {0} CHANGE {1} {2}",
                 TableName(databaseTable),

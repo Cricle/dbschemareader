@@ -123,6 +123,8 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
             {
                 if (createdIndexs.Add(item.Name))
                 {
+                    s.AppendFormat("DROP INDEX IF EXISTS {0};", formatter.Escape(item.Name));
+                    s.AppendLine();
                     s.AppendFormat("CREATE UNIQUE INDEX {0} ON {1}({2});",
                         formatter.Escape(item.Name),
                         formatter.Escape(item.TableName),
@@ -134,6 +136,8 @@ namespace DatabaseSchemaReader.SqlGen.SqLite
             {
                 if (createdIndexs.Add(item.Name))
                 {
+                    s.AppendFormat("DROP INDEX IF EXISTS {0};", formatter.Escape(item.Name));
+                    s.AppendLine();
                     s.AppendFormat("CREATE INDEX {0} ON {1}({2});",
                         formatter.Escape(item.Name),
                         formatter.Escape(item.TableName),

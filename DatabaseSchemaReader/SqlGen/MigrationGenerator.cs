@@ -144,6 +144,7 @@ namespace DatabaseSchemaReader.SqlGen
                 DatabaseTable tempTable = databaseTable.Clone("bkup1903_" + databaseTable.Name);
                 tempTable.Columns.Remove(tempTable.FindColumn(originalColumn == null ? databaseColumn.Name : originalColumn.Name));
                 tempTable.Columns.Add(databaseColumn);
+                sb.AppendLine($"DROP TABLE IF EXISTS \"{tempTable.Name}\";");
                 sb.Append(BackupAndUpdateTable(databaseTable, tempTable));
                 return sb.ToString();
             }

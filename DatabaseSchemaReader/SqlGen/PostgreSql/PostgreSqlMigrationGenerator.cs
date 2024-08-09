@@ -132,9 +132,7 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
             //defaultValue may be empty string- maybe just check null here??
             if (originalColumn == null && databaseColumn.DefaultValue != null)
             {
-                var defaultQuote = string.Empty;
-                if (databaseColumn.DataType != null && databaseColumn.DataType.IsString) defaultQuote = "'";
-                return $"ALTER TABLE {tableName} ALTER COLUMN {columnName} SET DEFAULT {defaultQuote}{databaseColumn.DefaultValue}{defaultQuote};";
+                return $"ALTER TABLE {tableName} ALTER COLUMN {columnName} SET DEFAULT {databaseColumn.DefaultValue};";
             }
 
             if (originalColumn != null && originalColumn.DefaultValue != databaseColumn.DefaultValue)
@@ -146,9 +144,7 @@ namespace DatabaseSchemaReader.SqlGen.PostgreSql
                 }
                 else
                 {
-                    var defaultQuote = string.Empty;
-                    if (databaseColumn.DataType != null && databaseColumn.DataType.IsString) defaultQuote = "'";
-                    setDefault = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} SET DEFAULT {defaultQuote}{databaseColumn.DefaultValue}{defaultQuote};";
+                    setDefault = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} SET DEFAULT {databaseColumn.DefaultValue};";
                 }
             }
 

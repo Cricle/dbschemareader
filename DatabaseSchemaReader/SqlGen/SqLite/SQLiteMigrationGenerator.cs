@@ -86,14 +86,30 @@ ON {3}
             {
                 return "--skipping reserved index: " + index.Name;
             }
-            return base.AddIndex(databaseTable, index);
+            if (index.Columns.Count == 0)
+            {
+                //IndexColumns errors 
+                return "-- add index " + index.Name + " (unknown columns)";
+            }
+            //we could plug in "CLUSTERED" or "PRIMARY XML" from index.IndexType here
+            var indexType = index.IsUnique ? "UNIQUE " : string.Empty;
+
+            var sql = string.Format(CultureInfo.InvariantCulture, "DROP INDEX IF EXISTS {0}", index.Name) + LineEnding();
+
+            return sql + string.Format(CultureInfo.InvariantCulture,
+                "CREATE {0}INDEX {1} ON {2}({3})",
+                indexType, //must have trailing space
+                Escape(index.Name),
+                TableName(databaseTable),
+                GetColumnList(index.Columns.Select(i => i.Name), index.ColumnOrderDescs ?? Enumerable.Empty<bool>())) + LineEnding();
+
         }
 
         public override string DropIndex(DatabaseTable databaseTable, DatabaseIndex index)
         {
             //no "ON table" syntax
             return string.Format(CultureInfo.InvariantCulture,
-                "DROP INDEX {0}{1};",
+                "DROP INDEX IF EXISTS {0}{1};",
                 SchemaPrefix(index.SchemaOwner),
                 Escape(index.Name));
         }
@@ -113,41 +129,44 @@ ON {3}
         }
         public override string RenameColumn(DatabaseTable databaseTable, DatabaseColumn databaseColumn, string originalColumnName)
         {
-            var ncol = new DatabaseColumn
-            {
-                ComputedDefinition = databaseColumn.ComputedDefinition,
-                NetName = databaseColumn.NetName,
-                DatabaseSchema = databaseColumn.DatabaseSchema,
-                DataType = databaseColumn.DataType,
-                DateTimePrecision = databaseColumn.DateTimePrecision,
-                DbDataType = databaseColumn.DbDataType,
-                DefaultValue = databaseColumn.DefaultValue,
-                Description = databaseColumn.Description,
-                ForeignKeyTable = databaseColumn.ForeignKeyTable,
-                Name = originalColumnName,
-                ForeignKeyTableName = databaseColumn.ForeignKeyTableName,
-                IdentityDefinition = databaseColumn.IdentityDefinition,
-                IsAutoNumber = databaseColumn.IsAutoNumber,
-                IsForeignKey = databaseColumn.IsForeignKey,
-                IsIndexed = databaseColumn.IsIndexed,
-                IsPrimaryKey = databaseColumn.IsPrimaryKey,
-                IsUniqueKey = databaseColumn.IsUniqueKey,
-                Length = databaseColumn.Length,
-                Nullable = databaseColumn.Nullable,
-                Ordinal = databaseColumn.Ordinal,
-                Precision = databaseColumn.Precision,
-                Scale = databaseColumn.Scale,
-                SchemaOwner = databaseColumn.SchemaOwner,
-                Table = databaseColumn.Table,
-                TableName = databaseColumn.TableName,
-                Tag = databaseColumn.Tag,
-            };
-            return AlterColumn(databaseTable, ncol, databaseColumn);
+            var sql = $"ALTER TABLE {Escape(databaseTable.Name)} RENAME COLUMN {Escape(originalColumnName)} TO {Escape(databaseTable.Name)};";
+            return sql;
+            //var ncol = new DatabaseColumn
+            //{
+            //    ComputedDefinition = databaseColumn.ComputedDefinition,
+            //    NetName = databaseColumn.NetName,
+            //    DatabaseSchema = databaseColumn.DatabaseSchema,
+            //    DataType = databaseColumn.DataType,
+            //    DateTimePrecision = databaseColumn.DateTimePrecision,
+            //    DbDataType = databaseColumn.DbDataType,
+            //    DefaultValue = databaseColumn.DefaultValue,
+            //    Description = databaseColumn.Description,
+            //    ForeignKeyTable = databaseColumn.ForeignKeyTable,
+            //    Name = originalColumnName,
+            //    ForeignKeyTableName = databaseColumn.ForeignKeyTableName,
+            //    IdentityDefinition = databaseColumn.IdentityDefinition,
+            //    IsAutoNumber = databaseColumn.IsAutoNumber,
+            //    IsForeignKey = databaseColumn.IsForeignKey,
+            //    IsIndexed = databaseColumn.IsIndexed,
+            //    IsPrimaryKey = databaseColumn.IsPrimaryKey,
+            //    IsUniqueKey = databaseColumn.IsUniqueKey,
+            //    Length = databaseColumn.Length,
+            //    Nullable = databaseColumn.Nullable,
+            //    Ordinal = databaseColumn.Ordinal,
+            //    Precision = databaseColumn.Precision,
+            //    Scale = databaseColumn.Scale,
+            //    SchemaOwner = databaseColumn.SchemaOwner,
+            //    Table = databaseColumn.Table,
+            //    TableName = databaseColumn.TableName,
+            //    Tag = databaseColumn.Tag,
+            //};
+            //return AlterColumn(databaseTable, ncol, databaseColumn);
         }
         public override string BackupAndUpdateTable(DatabaseTable databaseTable, DatabaseTable newTable)
         {
             StringBuilder sb = new StringBuilder();
             var gen = new TableGenerator(newTable);
+            sb.AppendLine($"DROP TABLE IF EXISTS [{newTable.Name}];");
             sb.AppendLine(gen.Write());
             string newColumns = newTable.GetFormattedColumnList(SqlType.SQLite);
             string selectColumns = newColumns;
